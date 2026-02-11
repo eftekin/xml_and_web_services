@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Examples of Special Characters and Entity References -->
+<examples>
+    
+    <!-- Example 1: Comparison operators -->
+    <math>
+        <expression>5 &lt; 10</expression>
+        <expression>10 &gt; 5</expression>
+        <expression>5 &lt;= 10</expression>
+        <expression>10 &gt;= 5</expression>
+    </math>
+    
+    <!-- Example 2: Company names with ampersand -->
+    <companies>
+        <company>Smith &amp; Sons</company>
+        <company>Johnson &amp; Johnson</company>
+        <company>Barnes &amp; Noble</company>
+    </companies>
+    
+    <!-- Example 3: Quotes in text -->
+    <quotes>
+        <quote author="Einstein">
+            He said &quot;Imagination is more important than knowledge&quot;
+        </quote>
+        <quote author="Shakespeare">
+            &apos;To be or not to be&apos; is the question
+        </quote>
+    </quotes>
+    
+    <!-- Example 4: Mixed special characters -->
+    <code>
+        <pseudo>
+            if (x &lt; 10 &amp;&amp; y &gt; 5) {
+                print(&quot;Condition met&quot;);
+            }
+        </pseudo>
+    </code>
+    
+    <!-- Example 5: CDATA for code without escaping -->
+    <javascript>
+        <![CDATA[
+        function compare(a, b) {
+            if (a < b && b > 0) {
+                console.log("a is less than b");
+                return -1;
+            }
+            return a > b ? 1 : 0;
+        }
+        ]]>
+    </javascript>
+    
+    <!-- Example 6: HTML in CDATA -->
+    <html-content>
+        <![CDATA[
+        <div class="container">
+            <h1>Title with special chars: < > & " '</h1>
+            <p>No escaping needed in CDATA!</p>
+        </div>
+        ]]>
+    </html-content>
+    
+    <!-- Example 7: Unicode characters (no escaping needed) -->
+    <international>
+        <greeting lang="ja">こんにちは</greeting>
+        <greeting lang="ar">مرحبا</greeting>
+        <greeting lang="zh">你好</greeting>
+        <greeting lang="ru">Привет</greeting>
+        <greeting lang="el">Γειά σου</greeting>
+    </international>
+    
+</examples>

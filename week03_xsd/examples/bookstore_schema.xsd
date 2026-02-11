@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.com/bookstore"
+           xmlns="http://example.com/bookstore"
+           elementFormDefault="qualified">
+
+    <!-- Simple type with restrictions -->
+    <xs:simpleType name="ISBNType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="978-\d{10}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="YearType">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1900"/>
+            <xs:maxInclusive value="2100"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="PriceType">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.00"/>
+            <xs:fractionDigits value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="CategoryType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="programming"/>
+            <xs:enumeration value="web-development"/>
+            <xs:enumeration value="databases"/>
+            <xs:enumeration value="api-design"/>
+            <xs:enumeration value="other"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Complex types -->
+    <xs:complexType name="AuthorType">
+        <xs:sequence>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="email" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="BookType">
+        <xs:sequence>
+            <xs:element name="title" type="xs:string"/>
+            <xs:element name="author" type="AuthorType" maxOccurs="unbounded"/>
+            <xs:element name="isbn" type="ISBNType"/>
+            <xs:element name="publicationYear" type="YearType"/>
+            <xs:element name="price" type="PriceType"/>
+            <xs:element name="description" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="category" type="CategoryType" use="required"/>
+        <xs:attribute name="inStock" type="xs:boolean" default="true"/>
+    </xs:complexType>
+
+    <!-- Root element -->
+    <xs:element name="bookstore">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="book" type="BookType" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

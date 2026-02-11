@@ -1,0 +1,189 @@
+{
+  "comment": "Common REST API response patterns",
+
+  "success_response": {
+    "status": 200,
+    "statusText": "OK",
+    "body": {
+      "id": 1,
+      "userId": 1,
+      "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+      "body": "quia et suscipit suscipit recusandae consequuntur expedita et cum reprehenderit molestiae ut ut quas totam nostrum rerum est autem sunt rem eveniet architecto"
+    }
+  },
+
+  "create_response": {
+    "status": 201,
+    "statusText": "Created",
+    "headers": {
+      "Location": "/posts/101",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "id": 101,
+      "userId": 1,
+      "title": "New post title",
+      "body": "New post content"
+    }
+  },
+
+  "list_response": {
+    "status": 200,
+    "statusText": "OK",
+    "body": [
+      {
+        "userId": 1,
+        "id": 1,
+        "title": "First post",
+        "body": "Content of first post"
+      },
+      {
+        "userId": 1,
+        "id": 2,
+        "title": "Second post",
+        "body": "Content of second post"
+      }
+    ]
+  },
+
+  "list_with_pagination": {
+    "status": 200,
+    "statusText": "OK",
+    "headers": {
+      "X-Total-Count": "100",
+      "X-Page": "1",
+      "X-Per-Page": "10",
+      "Link": "</posts?page=2>; rel=\"next\", </posts?page=0>; rel=\"prev\""
+    },
+    "body": [
+      {
+        "id": 1,
+        "title": "Item 1"
+      }
+    ]
+  },
+
+  "update_response": {
+    "status": 200,
+    "statusText": "OK",
+    "body": {
+      "id": 1,
+      "userId": 1,
+      "title": "Updated title",
+      "body": "Updated body"
+    }
+  },
+
+  "delete_response": {
+    "status": 204,
+    "statusText": "No Content",
+    "body": ""
+  },
+
+  "partial_update": {
+    "status": 200,
+    "statusText": "OK",
+    "body": {
+      "id": 1,
+      "userId": 1,
+      "title": "Updated title",
+      "body": "Original body (unchanged)"
+    }
+  },
+
+  "client_error_400": {
+    "status": 400,
+    "statusText": "Bad Request",
+    "body": {
+      "error": "Bad Request",
+      "message": "Invalid request format",
+      "details": {
+        "field": "title",
+        "issue": "Title is required"
+      }
+    }
+  },
+
+  "client_error_401": {
+    "status": 401,
+    "statusText": "Unauthorized",
+    "body": {
+      "error": "Unauthorized",
+      "message": "Authentication required. Please provide a valid token."
+    }
+  },
+
+  "client_error_403": {
+    "status": 403,
+    "statusText": "Forbidden",
+    "body": {
+      "error": "Forbidden",
+      "message": "You do not have permission to access this resource"
+    }
+  },
+
+  "client_error_404": {
+    "status": 404,
+    "statusText": "Not Found",
+    "body": {
+      "error": "Not Found",
+      "message": "The requested resource does not exist"
+    }
+  },
+
+  "client_error_422": {
+    "status": 422,
+    "statusText": "Unprocessable Entity",
+    "body": {
+      "error": "Validation failed",
+      "message": "The request was well-formed but contains semantic errors",
+      "errors": [
+        {
+          "field": "email",
+          "message": "Invalid email format"
+        },
+        {
+          "field": "age",
+          "message": "Must be 18 or older"
+        }
+      ]
+    }
+  },
+
+  "server_error_500": {
+    "status": 500,
+    "statusText": "Internal Server Error",
+    "body": {
+      "error": "Internal Server Error",
+      "message": "An unexpected error occurred",
+      "requestId": "abc123def456"
+    }
+  },
+
+  "server_error_503": {
+    "status": 503,
+    "statusText": "Service Unavailable",
+    "body": {
+      "error": "Service Unavailable",
+      "message": "The server is temporarily unavailable. Please try again later.",
+      "retryAfter": 60
+    }
+  },
+
+  "request_with_headers": {
+    "method": "POST",
+    "url": "https://api.example.com/posts",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "Accept": "application/json",
+      "User-Agent": "MyApp/1.0",
+      "X-Request-ID": "req-12345"
+    },
+    "body": {
+      "title": "New Post",
+      "body": "Post content",
+      "userId": 1
+    }
+  }
+}

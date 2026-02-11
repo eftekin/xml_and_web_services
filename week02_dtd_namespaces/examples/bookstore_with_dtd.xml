@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DTD: Document Type Definition Example -->
+<!DOCTYPE bookstore [
+    <!ELEMENT bookstore (book+)>
+    <!ELEMENT book (title, author+, price, year, isbn?)>
+    <!ELEMENT title (#PCDATA)>
+    <!ELEMENT author (#PCDATA)>
+    <!ELEMENT price (#PCDATA)>
+    <!ELEMENT year (#PCDATA)>
+    <!ELEMENT isbn (#PCDATA)>
+    
+    <!ATTLIST book
+        id ID #REQUIRED
+        category CDATA #REQUIRED
+        language CDATA "en">
+    <!ATTLIST price currency CDATA "USD">
+]>
+
+<bookstore>
+    <book id="b1" category="programming" language="en">
+        <title>XML Fundamentals</title>
+        <author>John Smith</author>
+        <author>Jane Doe</author>
+        <price currency="USD">39.99</price>
+        <year>2024</year>
+        <isbn>978-1234567890</isbn>
+    </book>
+    
+    <book id="b2" category="web">
+        <title>Modern Web Services</title>
+        <author>Alice Johnson</author>
+        <price currency="EUR">45.00</price>
+        <year>2025</year>
+    </book>
+    
+    <book id="b3" category="api-design" language="en">
+        <title>RESTful API Design</title>
+        <author>Bob Williams</author>
+        <author>Carol Martinez</author>
+        <price>29.99</price>
+        <year>2024</year>
+        <isbn>978-0987654321</isbn>
+    </book>
+</bookstore>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Book Catalog Example -->
+<catalog>
+    <book id="bk101" category="programming">
+        <title lang="en">XML Developer's Guide</title>
+        <author>Gambardella, Matthew</author>
+        <year>2000</year>
+        <price currency="USD">44.95</price>
+        <publisher>
+            <name>Tech Press</name>
+            <location>New York, NY</location>
+        </publisher>
+        <description>
+            An in-depth look at creating applications with XML.
+            Covers XML syntax, DTD, XSD, XPath, XSLT, and more.
+        </description>
+        <isbn>978-0123456789</isbn>
+        <pages>352</pages>
+        <inStock>true</inStock>
+    </book>
+    
+    <book id="bk102" category="fiction">
+        <title lang="en">Midnight Rain</title>
+        <author>Ralls, Kim</author>
+        <year>2000</year>
+        <price currency="USD">5.95</price>
+        <publisher>
+            <name>Novel House</name>
+            <location>Seattle, WA</location>
+        </publisher>
+        <description>
+            A former architect battles corporate zombies,
+            an evil sorceress, and her own childhood to become queen
+            of the world.
+        </description>
+        <isbn>978-0987654321</isbn>
+        <pages>256</pages>
+        <inStock>true</inStock>
+    </book>
+    
+    <book id="bk103" category="science">
+        <title lang="en">The Sundered Grail</title>
+        <author>Corets, Eva</author>
+        <year>2001</year>
+        <price currency="USD">5.95</price>
+        <publisher>
+            <name>Science Books Inc.</name>
+            <location>Boston, MA</location>
+        </publisher>
+        <description>
+            The two daughters of Maeve, half-sisters,
+            battle one another for control of England.
+        </description>
+        <isbn>978-0456789123</isbn>
+        <pages>412</pages>
+        <inStock>false</inStock>
+    </book>
+</catalog>

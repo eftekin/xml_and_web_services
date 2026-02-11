@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.com/bookstore"
+           xmlns="http://example.com/bookstore"
+           elementFormDefault="qualified">
+
+<!-- Valid XML instance based on this schema:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<bookstore xmlns="http://example.com/bookstore"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://example.com/bookstore bookstore_schema.xsd"
+           name="Tech Books Online">
+    
+    <book id="b001" category="programming" inStock="true">
+        <title>XML Complete Guide</title>
+        <author id="a001">
+            <firstName>John</firstName>
+            <lastName>Smith</lastName>
+            <email>john@example.com</email>
+        </author>
+        <isbn>978-1234567890</isbn>
+        <publicationYear>2024</publicationYear>
+        <price>39.99</price>
+        <description>
+            A comprehensive guide to XML, covering syntax, DTD, XSD,
+            XPath, XSLT, and modern applications.
+        </description>
+    </book>
+    
+    <book id="b002" category="web-development">
+        <title>RESTful APIs</title>
+        <author id="a002">
+            <firstName>Alice</firstName>
+            <lastName>Johnson</lastName>
+        </author>
+        <author id="a003">
+            <firstName>Bob</firstName>
+            <lastName>Williams</lastName>
+            <email>bob@example.com</email>
+        </author>
+        <isbn>978-0987654321</isbn>
+        <publicationYear>2025</publicationYear>
+        <price>44.99</price>
+    </book>
+
+</bookstore>
+
+-->
+
+</xs:schema>

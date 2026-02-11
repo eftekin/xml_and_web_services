@@ -1,0 +1,85 @@
+{
+  "name": "xml-and-web-services",
+  "version": "1.0.0",
+  "description": "Comprehensive learning repository for XML and modern web services. Peer-created learning resource with Python Jupyter notebooks and JavaScript/Node.js examples.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch",
+    "rest-server": "node week07_rest/examples/simple_api_server.js",
+    "graphql-server": "node week11_graphql/examples/apollo_server.js"
+  },
+  "keywords": [
+    "XML",
+    "web services",
+    "REST API",
+    "GraphQL",
+    "gRPC",
+    "OAuth",
+    "JWT",
+    "learning",
+    "peer-learning"
+  ],
+  "author": "Community Contributors",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "graphql": "^16.8.0"
+  },
+  "optionalDependencies": {
+    "apollo-server": "^4.10.0",
+    "apollo-client": "^3.8.0",
+    "@apollo/client": "^3.8.0",
+    "express": "^4.18.0",
+    "express-session": "^1.17.3",
+    "passport": "^0.7.0",
+    "passport-github": "^1.1.0",
+    "passport-google-oauth20": "^2.0.0",
+    "jsonwebtoken": "^9.1.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/xml-and-web-services.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/xml-and-web-services/issues"
+  },
+  "homepage": "https://github.com/yourusername/xml-and-web-services#readme",
+  "notes": {
+    "dependencies": {
+      "axios": "HTTP client library (used as alternative to Fetch API)",
+      "graphql": "Core GraphQL library for schema building"
+    },
+    "optionalDependencies": {
+      "apollo-server": "GraphQL server framework - Install for Week 11",
+      "apollo-client": "GraphQL client for React - Install for Week 11 browser examples",
+      "@apollo/client": "Modern Apollo Client package",
+      "express": "Web framework - Install for REST/GraphQL servers",
+      "express-session": "Session management middleware",
+      "passport": "Authentication middleware - Install for Week 13",
+      "passport-github": "GitHub OAuth strategy",
+      "passport-google-oauth20": "Google OAuth strategy",
+      "jsonwebtoken": "JWT token creation/verification - Install for Week 13",
+      "bcryptjs": "Password hashing - Install for security",
+      "eslint": "Code linting for JS examples",
+      "prettier": "Code formatting"
+    },
+    "installation": {
+      "basic": "npm install - Installs only core dependencies (Fetch API built-in)",
+      "rest": "npm install axios - For REST examples",
+      "graphql": "npm install apollo-server graphql - For GraphQL server",
+      "security": "npm install jsonwebtoken bcryptjs - For authentication",
+      "oauth": "npm install passport passport-github express-session - For OAuth",
+      "all": "npm install --save-optional - Installs all optional packages"
+    }
+  }
+}

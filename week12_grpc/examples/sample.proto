@@ -1,0 +1,252 @@
+syntax = "proto3";
+
+package blog;
+
+// Blog Service Proto Definition
+// Protocol Buffers (protobuf) is a method of serializing structured data
+// developed by Google. It's language and platform neutral.
+
+// This demonstrates the blog API defined in Protocol Buffers format
+// Use case: gRPC services, efficient binary serialization
+
+// ============================================================================
+// Message Definitions
+// ============================================================================
+
+message Post {
+  string id = 1;
+  string title = 2;
+  string body = 3;
+  string excerpt = 4;
+  string author_id = 5;
+  User author = 6;
+  repeated Comment comments = 7;
+  repeated string tags = 8;
+  bool published = 9;
+  int32 view_count = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string avatar = 4;
+  string bio = 5;
+  UserRole role = 6;
+  repeated Post posts = 7;
+  int32 post_count = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message Comment {
+  string id = 1;
+  string text = 2;
+  string author_id = 3;
+  User author = 4;
+  string post_id = 5;
+  Post post = 6;
+  repeated Comment replies = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message PostList {
+  repeated Post posts = 1;
+  Pagination pagination = 2;
+}
+
+message UserList {
+  repeated User users = 1;
+  Pagination pagination = 2;
+}
+
+message Pagination {
+  int32 limit = 1;
+  int32 offset = 2;
+  int32 total = 3;
+  bool has_next = 4;
+  bool has_prev = 5;
+}
+
+// Request/Response messages for RPC methods
+
+message CreatePostRequest {
+  string title = 1;
+  string body = 2;
+  string excerpt = 3;
+  repeated string tags = 4;
+  bool published = 5;
+}
+
+message CreatePostResponse {
+  bool success = 1;
+  Post post = 2;
+  repeated Error errors = 3;
+}
+
+message UpdatePostRequest {
+  string post_id = 1;
+  string title = 2;
+  string body = 3;
+  string excerpt = 4;
+  repeated string tags = 5;
+  bool published = 6;
+}
+
+message UpdatePostResponse {
+  bool success = 1;
+  Post post = 2;
+}
+
+message DeletePostRequest {
+  string post_id = 1;
+}
+
+message DeletePostResponse {
+  bool success = 1;
+  string deleted_id = 2;
+}
+
+message GetPostRequest {
+  string post_id = 1;
+}
+
+message GetPostsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+  bool published_only = 3;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUsersRequest {
+  int32 limit = 1;
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message CreateUserResponse {
+  User user = 1;
+  repeated Error errors = 2;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  string name = 2;
+  string bio = 3;
+  string avatar = 4;
+}
+
+message CreateCommentRequest {
+  string post_id = 1;
+  string text = 2;
+  string parent_comment_id = 3;
+}
+
+message CreateCommentResponse {
+  Comment comment = 1;
+  repeated Error errors = 2;
+}
+
+message DeleteCommentRequest {
+  string comment_id = 1;
+}
+
+message DeleteCommentResponse {
+  bool success = 1;
+}
+
+message Error {
+  string field = 1;
+  string message = 2;
+}
+
+// Enum definitions
+
+enum UserRole {
+  ADMIN = 0;
+  MODERATOR = 1;
+  USER = 2;
+}
+
+enum PostStatus {
+  DRAFT = 0;
+  PUBLISHED = 1;
+  ARCHIVED = 2;
+}
+
+// ============================================================================
+// Service Definition (for gRPC)
+// ============================================================================
+
+service BlogService {
+  // Posts operations
+  rpc GetPost(GetPostRequest) returns (Post);
+  rpc GetPosts(GetPostsRequest) returns (PostList);
+  rpc CreatePost(CreatePostRequest) returns (CreatePostResponse);
+  rpc UpdatePost(UpdatePostRequest) returns (UpdatePostResponse);
+  rpc DeletePost(DeletePostRequest) returns (DeletePostResponse);
+  
+  // Users operations
+  rpc GetUser(GetUserRequest) returns (User);
+  rpc GetUsers(GetUsersRequest) returns (UserList);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  
+  // Comments operations
+  rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
+  rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse);
+  
+  // Streaming endpoints
+  rpc WatchPostUpdates(GetPostRequest) returns (stream Post);
+  rpc StreamAllPosts(GetPostsRequest) returns (stream Post);
+}
+
+// ============================================================================
+// Notes on Protocol Buffers
+// ============================================================================
+/*
+Key concepts:
+1. Field numbers (1, 2, 3, etc) are used for serialization - avoid changing them
+2. Field rules:
+   - singular: default, zero or one value
+   - repeated: 0 or more values (array/list)
+   - required/optional: deprecated in proto3
+3. Scalar types: bool, int32, int64, uint32, uint64, sint32, sint64, float, double, string, bytes
+4. Complex types: messages, enums, oneof
+5. Services: Define RPC methods for communication
+6. Advantages:
+   - Compact binary format (smaller than JSON/XML)
+   - Fast serialization/deserialization
+   - Strong typing
+   - Backward/forward compatibility
+7. Use cases:
+   - gRPC services
+   - Data serialization
+   - Configuration management
+   - Inter-service communication
+*/
+
+// ============================================================================
+// Alternative: Using timestamps
+// ============================================================================
+
+import "google/protobuf/timestamp.proto";
+
+// Example already shown above with google.protobuf.Timestamp
+
+// ============================================================================
+// Version information
+// ============================================================================
+
+// Proto3 syntax - simpler and more flexible than proto2
+// Compatible with most programming languages:
+// - Go, Java, Python, C++, C#, JavaScript, TypeScript, Ruby, PHP, Dart, etc.

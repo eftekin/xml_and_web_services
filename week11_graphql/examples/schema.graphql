@@ -1,0 +1,200 @@
+# GraphQL Schema Definition for Blog API
+# This file demonstrates the SDL (Schema Definition Language) for GraphQL
+
+# Query type - defines all root-level read operations
+type Query {
+  # Retrieve all posts
+  posts(limit: Int, offset: Int): [Post!]!
+
+  # Retrieve a single post by ID
+  post(id: ID!): Post
+
+  # Retrieve all users
+  users(limit: Int): [User!]!
+
+  # Retrieve a single user by ID
+  user(id: ID!): User
+
+  # Search posts by title
+  searchPosts(query: String!): [Post!]!
+
+  # Get authenticated user (requires auth)
+  me: User
+}
+
+# Mutation type - defines all root-level write operations
+type Mutation {
+  # Create a new post
+  createPost(input: CreatePostInput!): CreatePostPayload!
+
+  # Update an existing post
+  updatePost(id: ID!, input: UpdatePostInput!): Post
+
+  # Delete a post
+  deletePost(id: ID!): DeletePayload!
+
+  # Create a new user
+  createUser(input: CreateUserInput!): User!
+
+  # Update user profile
+  updateUser(id: ID!, input: UpdateUserInput!): User
+
+  # Create a comment on a post
+  createComment(input: CreateCommentInput!): Comment!
+
+  # Delete a comment
+  deleteComment(id: ID!): Boolean!
+}
+
+# Subscription type - defines real-time events
+type Subscription {
+  # Real-time updates when a new post is created
+  postCreated: Post!
+
+  # Real-time updates when a post is updated
+  postUpdated(id: ID!): Post!
+
+  # Real-time updates for new comments
+  commentAdded(postId: ID!): Comment!
+}
+
+# Main entity types
+
+type Post {
+  id: ID!
+  title: String!
+  body: String!
+  excerpt: String
+  author: User!
+  authorId: ID!
+  comments: [Comment!]!
+  commentCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  published: Boolean!
+  tags: [String!]!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  avatar: String
+  bio: String
+  posts: [Post!]!
+  postCount: Int!
+  comments: [Comment!]!
+  createdAt: DateTime!
+  role: UserRole!
+}
+
+type Comment {
+  id: ID!
+  text: String!
+  author: User!
+  authorId: ID!
+  post: Post!
+  postId: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  replies: [Comment!]!
+  parentComment: Comment
+}
+
+# Enum types
+
+enum UserRole {
+  ADMIN
+  MODERATOR
+  USER
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+# Input types (used for mutations)
+
+input CreatePostInput {
+  title: String!
+  body: String!
+  excerpt: String
+  tags: [String!]
+  published: Boolean = false
+}
+
+input UpdatePostInput {
+  title: String
+  body: String
+  excerpt: String
+  tags: [String!]
+  published: Boolean
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  name: String
+  bio: String
+  avatar: String
+}
+
+input CreateCommentInput {
+  text: String!
+  postId: ID!
+  parentCommentId: ID
+}
+
+# Response types for mutations
+
+type CreatePostPayload {
+  success: Boolean!
+  post: Post
+  errors: [Error!]
+}
+
+type DeletePayload {
+  success: Boolean!
+  deletedId: ID
+}
+
+type Error {
+  field: String!
+  message: String!
+}
+
+# Scalar types
+
+scalar DateTime
+
+# Connection/pagination types (Relay-style pagination)
+
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PostEdge {
+  cursor: String!
+  node: Post!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# Directives (special modifiers for fields)
+
+directive @auth on FIELD_DEFINITION
+directive @admin on FIELD_DEFINITION
+directive @deprecated(reason: String) on FIELD_DEFINITION | ENUM_VALUE

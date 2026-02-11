@@ -1,0 +1,387 @@
+# GraphQL Query Examples
+# These queries can be sent to the GraphQL API
+
+# ============================================================================
+# Basic Query Examples
+# ============================================================================
+
+# Query 1: Get all posts (basic)
+query GetAllPosts {
+  posts {
+    id
+    title
+    body
+    author {
+      name
+    }
+  }
+}
+
+# Query 2: Get posts with pagination
+query GetPostsWithPagination {
+  posts(limit: 10, offset: 0) {
+    id
+    title
+    excerpt
+    author {
+      name
+    }
+    createdAt
+  }
+}
+
+# Query 3: Get a specific post with full details
+query GetPostDetails($postId: ID!) {
+  post(id: $postId) {
+    id
+    title
+    body
+    excerpt
+    author {
+      id
+      name
+      email
+      avatar
+    }
+    comments {
+      id
+      text
+      author {
+        name
+      }
+      createdAt
+    }
+    commentCount
+    tags
+    published
+    createdAt
+    updatedAt
+  }
+}
+
+# Query 4: Get user profile with posts
+query GetUserProfile($userId: ID!) {
+  user(id: $userId) {
+    id
+    name
+    email
+    bio
+    avatar
+    role
+    posts(limit: 5) {
+      id
+      title
+      createdAt
+    }
+    postCount
+    createdAt
+  }
+}
+
+# Query 5: Search posts by title
+query SearchPosts($searchTerm: String!) {
+  searchPosts(query: $searchTerm) {
+    id
+    title
+    body
+    author {
+      name
+    }
+  }
+}
+
+# Query 6: Get all users with their post counts
+query GetAllUsers {
+  users(limit: 20) {
+    id
+    name
+    email
+    avatar
+    role
+    postCount
+  }
+}
+
+# Query 7: Get current authenticated user
+query GetCurrentUser {
+  me {
+    id
+    name
+    email
+    bio
+    avatar
+    role
+    posts {
+      id
+      title
+      published
+    }
+  }
+}
+
+# Query 8: Get post with nested comments and replies
+query GetPostWithCommentTree($postId: ID!) {
+  post(id: $postId) {
+    id
+    title
+    body
+    author {
+      name
+      avatar
+    }
+    comments {
+      id
+      text
+      author {
+        name
+        avatar
+      }
+      createdAt
+      replies {
+        id
+        text
+        author {
+          name
+        }
+      }
+    }
+    commentCount
+  }
+}
+
+# Query 9: Get multiple users in one request (batch query)
+query GetMultipleUsers {
+  user1: user(id: "1") {
+    id
+    name
+    postCount
+  }
+  user2: user(id: "2") {
+    id
+    name
+    postCount
+  }
+  user3: user(id: "3") {
+    id
+    name
+    postCount
+  }
+}
+
+# Query 10: Using fragments to avoid repetition
+fragment UserInfo on User {
+  id
+  name
+  email
+  avatar
+  role
+}
+
+fragment PostInfo on Post {
+  id
+  title
+  body
+  createdAt
+  published
+}
+
+query GetPostsWithFragment {
+  posts(limit: 10) {
+    ...PostInfo
+    author {
+      ...UserInfo
+    }
+  }
+}
+
+# ============================================================================
+# Mutation Examples
+# ============================================================================
+
+# Mutation 1: Create a new post
+mutation CreateNewPost($title: String!, $body: String!) {
+  createPost(input: { title: $title, body: $body, published: false }) {
+    success
+    post {
+      id
+      title
+      body
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Variables for CreateNewPost:
+# {
+#   "title": "My New Blog Post",
+#   "body": "This is the content of my post..."
+# }
+
+# Mutation 2: Update a post
+mutation UpdateExistingPost($postId: ID!, $title: String!, $body: String!) {
+  updatePost(
+    id: $postId
+    input: { title: $title, body: $body, published: true }
+  ) {
+    id
+    title
+    body
+    updatedAt
+  }
+}
+
+# Mutation 3: Delete a post
+mutation DeletePost($postId: ID!) {
+  deletePost(id: $postId) {
+    success
+    deletedId
+  }
+}
+
+# Mutation 4: Create a new user
+mutation RegisterNewUser($name: String!, $email: String!, $password: String!) {
+  createUser(input: { name: $name, email: $email, password: $password }) {
+    id
+    name
+    email
+    role
+  }
+}
+
+# Mutation 5: Create a comment on a post
+mutation AddCommentToPost($postId: ID!, $text: String!) {
+  createComment(input: { postId: $postId, text: $text }) {
+    id
+    text
+    author {
+      name
+    }
+    createdAt
+  }
+}
+
+# Mutation 6: Update user profile
+mutation UpdateUserProfile($userId: ID!, $name: String!, $bio: String!) {
+  updateUser(id: $userId, input: { name: $name, bio: $bio }) {
+    id
+    name
+    bio
+    email
+  }
+}
+
+# Mutation 7: Create post with tags
+mutation CreatePostWithTags($title: String!, $body: String!, $tags: [String!]) {
+  createPost(input: { title: $title, body: $body, tags: $tags }) {
+    success
+    post {
+      id
+      title
+      tags
+    }
+  }
+}
+
+# ============================================================================
+# Subscription Examples
+# ============================================================================
+
+# Subscription 1: Listen for new posts
+subscription OnNewPost {
+  postCreated {
+    id
+    title
+    author {
+      name
+    }
+    createdAt
+  }
+}
+
+# Subscription 2: Listen for updates to specific post
+subscription OnPostUpdate($postId: ID!) {
+  postUpdated(id: $postId) {
+    id
+    title
+    body
+    updatedAt
+  }
+}
+
+# Subscription 3: Listen for new comments on a post
+subscription OnNewComment($postId: ID!) {
+  commentAdded(postId: $postId) {
+    id
+    text
+    author {
+      name
+    }
+    createdAt
+  }
+}
+
+# ============================================================================
+# Query Variables Examples
+# ============================================================================
+
+# Variables for GetPostDetails:
+# {
+#   "postId": "1"
+# }
+
+# Variables for GetUserProfile:
+# {
+#   "userId": "1"
+# }
+
+# Variables for SearchPosts:
+# {
+#   "searchTerm": "GraphQL"
+# }
+
+# Variables for GetPostWithCommentTree:
+# {
+#   "postId": "1"
+# }
+
+# Variables for UpdateExistingPost:
+# {
+#   "postId": "1",
+#   "title": "Updated Title",
+#   "body": "Updated content..."
+# }
+
+# Variables for DeletePost:
+# {
+#   "postId": "1"
+# }
+
+# Variables for RegisterNewUser:
+# {
+#   "name": "Jane Doe",
+#   "email": "jane@example.com",
+#   "password": "securePassword123"
+# }
+
+# Variables for AddCommentToPost:
+# {
+#   "postId": "1",
+#   "text": "Great post!"
+# }
+
+# Variables for UpdateUserProfile:
+# {
+#   "userId": "1",
+#   "name": "Jane Smith",
+#   "bio": "A passionate developer and writer"
+# }
+
+# Variables for CreatePostWithTags:
+# {
+#   "title": "GraphQL Best Practices",
+#   "body": "Here are some best practices...",
+#   "tags": ["graphql", "api", "best-practices"]
+# }
