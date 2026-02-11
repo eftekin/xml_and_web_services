@@ -9,6 +9,8 @@
  * - Using Apollo Client for frontend queries
  */
 
+import { fileURLToPath } from "url";
+
 // ============================================================================
 // Example 1: Apollo Server Setup and Schema Definition
 // ============================================================================
@@ -624,8 +626,191 @@ async function example() {
   }
 }
 
+// ============================================================================
+// Practical GraphQL Example: Query SpaceX API
+// ============================================================================
+
+/**
+ * Fetch real data from SpaceX GraphQL API
+ * Demonstrates practical GraphQL queries with real-world data
+ */
+async function querySpaceXData() {
+  const client = new GraphQLClient("https://spacex-production.up.railway.app/");
+
+  try {
+    console.log("\n🚀 Fetching SpaceX Company Information...\n");
+
+    // Query 1: Get company info
+    const companyData = await client.query(`
+      query {
+        company {
+          name
+          founder
+          founded
+          employees
+          vehicles
+          launch_sites
+          test_sites
+          ceo
+          cto
+          coo
+          summary
+        }
+      }
+    `);
+
+    const company = companyData.company;
+    console.log(`Company: ${company.name}`);
+    console.log(`Founder: ${company.founder}`);
+    console.log(`Founded: ${company.founded}`);
+    console.log(`CEO: ${company.ceo}`);
+    console.log(`CTO: ${company.cto}`);
+    console.log(`COO: ${company.coo}`);
+    console.log(`Employees: ${company.employees}`);
+    console.log(`Vehicles: ${company.vehicles}`);
+    console.log(`Launch Sites: ${company.launch_sites}`);
+    console.log(`\nSummary: ${company.summary}`);
+
+    console.log("\n\n🚀 Fetching Latest Launch...\n");
+
+    // Query 2: Get latest launch
+    const launchData = await client.query(`
+      query {
+        launchLatest {
+          mission_name
+          launch_date_utc
+          launch_success
+          details
+          rocket {
+            rocket_name
+            rocket_type
+          }
+          launch_site {
+            site_name_long
+          }
+          links {
+            article_link
+            video_link
+          }
+        }
+      }
+    `);
+
+    const launch = launchData.launchLatest;
+    console.log(`Mission: ${launch.mission_name}`);
+    console.log(
+      `Launch Date: ${new Date(launch.launch_date_utc).toLocaleString()}`,
+    );
+    console.log(`Success: ${launch.launch_success ? "✅ Yes" : "❌ No"}`);
+
+    if (launch.rocket) {
+      console.log(
+        `Rocket: ${launch.rocket.rocket_name} (${launch.rocket.rocket_type})`,
+      );
+    }
+
+    if (launch.launch_site) {
+      console.log(`Launch Site: ${launch.launch_site.site_name_long}`);
+    }
+
+    if (launch.details) {
+      console.log(`\nDetails: ${launch.details}`);
+    }
+    if (launch.links?.article_link) {
+      console.log(`\nArticle: ${launch.links.article_link}`);
+    }
+    if (launch.links?.video_link) {
+      console.log(`Video: ${launch.links.video_link}`);
+    }
+
+    console.log("\n\n🚀 Fetching Upcoming Launches (Next 5)...\n");
+
+    // Query 3: Get upcoming launches
+    const upcomingData = await client.query(`
+      query {
+        launchesUpcoming(limit: 5) {
+          mission_name
+          launch_date_utc
+          rocket {
+            rocket_name
+          }
+        }
+      }
+    `);
+
+    upcomingData.launchesUpcoming.forEach((launch, index) => {
+      console.log(`${index + 1}. ${launch.mission_name}`);
+      console.log(
+        `   Date: ${new Date(launch.launch_date_utc).toLocaleString()}`,
+      );
+      console.log(`   Rocket: ${launch.rocket.rocket_name}`);
+      console.log("");
+    });
+
+    console.log("\n🚀 Fetching Rocket Information...\n");
+
+    // Query 4: Get all rockets
+    const rocketsData = await client.query(`
+      query {
+        rockets {
+          name
+          type
+          active
+          stages
+          boosters
+          cost_per_launch
+          success_rate_pct
+          first_flight
+          country
+          company
+          height {
+            meters
+          }
+          diameter {
+            meters
+          }
+          mass {
+            kg
+          }
+          description
+        }
+      }
+    `);
+
+    rocketsData.rockets.forEach((rocket) => {
+      console.log(`\n${rocket.name} (${rocket.type})`);
+      console.log(`  Status: ${rocket.active ? "✅ Active" : "❌ Retired"}`);
+      console.log(`  First Flight: ${rocket.first_flight}`);
+      console.log(`  Country: ${rocket.country}`);
+      console.log(`  Company: ${rocket.company}`);
+      console.log(
+        `  Cost per Launch: $${rocket.cost_per_launch.toLocaleString()}`,
+      );
+      console.log(`  Success Rate: ${rocket.success_rate_pct}%`);
+      console.log(`  Height: ${rocket.height.meters}m`);
+      console.log(`  Diameter: ${rocket.diameter.meters}m`);
+      console.log(`  Mass: ${rocket.mass.kg.toLocaleString()}kg`);
+      console.log(`  Stages: ${rocket.stages}, Boosters: ${rocket.boosters}`);
+      console.log(`  Description: ${rocket.description}`);
+    });
+
+    console.log("\n\n✅ GraphQL queries completed successfully!\n");
+  } catch (error) {
+    console.error("\n❌ Error querying SpaceX API:", error.message);
+    console.error("\nMake sure you have an internet connection.");
+  }
+}
+
+// ============================================================================
+// Run practical example if this file is executed directly
+// ============================================================================
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  querySpaceXData().catch(console.error);
+}
+
 // Export for use
-module.exports = {
+export {
   graphql_queries,
   graphql_mutations,
   best_practices,
@@ -633,4 +818,5 @@ module.exports = {
   GraphQLClient,
   apollo_server_example,
   apollo_client_example,
+  querySpaceXData,
 };

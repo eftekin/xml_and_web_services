@@ -7,6 +7,8 @@
  * - Error handling and retry patterns
  */
 
+import { fileURLToPath } from "url";
+
 // ============================================================================
 // Example 1: Using Fetch API (Built-in, Node.js 18+)
 // ============================================================================
@@ -412,7 +414,7 @@ async function completeExample() {
 // Main: Run examples if this file is executed directly
 // ============================================================================
 
-if (require.main === module) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   // Uncomment any example you want to run:
 
   // getPostsWithFetch();
@@ -431,7 +433,7 @@ if (require.main === module) {
 // Export for use in other modules (if using module systems)
 // ============================================================================
 
-module.exports = {
+export {
   getPostsWithFetch,
   createPostWithFetch,
   updatePostWithFetch,

@@ -4,6 +4,23 @@
 
 You've learned REST—multiple endpoints, fixed responses, over-fetching or under-fetching data. GraphQL solves these problems with a different approach: one endpoint, clients specify exactly what they need, strongly typed schemas. Companies like Facebook, GitHub, Shopify, and Twitter use GraphQL in production.
 
+## Quick Start - See It In Action
+
+Run the practical example to see real GraphQL queries in action:
+
+```bash
+node week11_graphql/01_graphql_with_node.js
+```
+
+This will query the SpaceX GraphQL API and fetch:
+
+- Company information
+- Latest launch details with nested rocket data
+- Upcoming launches
+- Complete rocket specifications
+
+Watch how GraphQL fetches complex, nested data in single requests!
+
 ## The Problem GraphQL Solves
 
 ### REST Pain Points
@@ -722,6 +739,68 @@ mutation {
   }
 }
 ```
+
+## Running the Practical Example
+
+The `01_graphql_with_node.js` file contains a practical example that queries the **SpaceX GraphQL API** to fetch real data:
+
+```bash
+node week11_graphql/01_graphql_with_node.js
+```
+
+**What it does:**
+
+1. **Fetches SpaceX Company Information** - Name, founder, CEO, employees, etc.
+2. **Gets Latest Launch Data** - Mission details, rocket info, launch success status
+3. **Shows Upcoming Launches** - Next 5 scheduled launches with dates and rockets
+4. **Lists All Rockets** - Complete rocket specifications, costs, and success rates
+
+**This demonstrates:**
+
+- Real GraphQL queries against a production API
+- Nested field selection (company → details, launch → rocket → details)
+- Query parameters (limit for upcoming launches)
+- Complex data fetching in single requests
+- Practical use of the GraphQLClient class
+
+The SpaceX API is publicly accessible and requires no authentication, making it perfect for learning GraphQL queries.
+
+**Example query used in the code:**
+
+```graphql
+query {
+  company {
+    name
+    founder
+    founded
+    employees
+    ceo
+    cto
+    summary
+  }
+}
+```
+
+**Another example:**
+
+```graphql
+query {
+  launchLatest {
+    mission_name
+    launch_date_utc
+    launch_success
+    rocket {
+      rocket_name
+      rocket_type
+    }
+    launch_site {
+      site_name_long
+    }
+  }
+}
+```
+
+Notice how in a single query, we get the launch data AND nested rocket information AND launch site details - this would require multiple REST API calls!
 
 ## What You Should Know
 
