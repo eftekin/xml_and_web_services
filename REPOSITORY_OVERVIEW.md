@@ -35,8 +35,7 @@ xml_and_web_services/
 │
 ├── week07_rest/                 # REST APIs & JSON
 │   ├── README.md
-│   ├── 01_json_and_rest_complete.ipynb          (Python)
-│   ├── 02_rest_with_node.js                     (JavaScript)
+│   ├── 01_rest_with_node.js                     (JavaScript)
 │   └── examples/
 │       ├── api_responses.json
 │       └── rest_patterns.js
@@ -51,8 +50,7 @@ xml_and_web_services/
 │
 ├── week11_graphql/              # GraphQL
 │   ├── README.md
-│   ├── 01_graphql_complete_guide.ipynb          (Python)
-│   ├── 02_graphql_with_node.js                  (JavaScript)
+│   ├── 01_graphql_with_node.js                  (JavaScript)
 │   └── examples/
 │       ├── schema.graphql
 │       └── queries.graphql
@@ -71,17 +69,10 @@ xml_and_web_services/
 
 ## What You Get
 
-**Jupyter Notebooks (Python):**
-
-- Week 1: 2 notebooks (1000+ lines, interactive)
-- Week 7: REST API guide
-- Week 11: GraphQL guide
-
-**JavaScript/Node.js:**
+**JavaScript/Node.js Files:**
 
 - Week 7: REST client with async/await
 - Week 11: Apollo GraphQL server & client
-- Week 13: OAuth 2.0 patterns
 - All files are production-ready, runnable code
 
 **Example Files:**
@@ -104,55 +95,27 @@ xml_and_web_services/
 ## How to Use
 
 1. Read the week's README first (teaches the topic)
-2. Look at code examples (Python notebook or JavaScript file)
+2. Look at code examples (JavaScript files where available)
 3. Run the code and modify it
 4. Check examples/ folder for reference files
 
 Each week is mostly standalone, but Weeks 1-6 build on each other.
 
-## Languages
-
-**Python:** Jupyter notebooks for interactive, exploratory learning
-
-**JavaScript/Node.js:** Modern, practical examples for REST, GraphQL, security
-
-Pick one or both depending on your needs.
-
 ### Week 7: JSON & REST
 
-Python notebook (Jupyter) - Complete REST guide (900+ lines)
-
-- JSON data types and syntax
-- JSON vs XML comparison
-- REST architectural principles
-- HTTP methods (GET, POST, PUT, PATCH, DELETE)
-- HTTP status codes
-- Practical API consumption with requests library
-- Error handling patterns
-- URI design best practices
-- Live API examples with JSONPlaceholder
-
-JavaScript/Node.js examples - REST client patterns
+JavaScript/Node.js examples - REST client patterns:
 
 - Fetch API for browser and Node.js
 - Axios for HTTP requests
 - Promise-based and async/await patterns
 - Error handling and retry logic
 - Real-world API integration
+- HTTP methods (GET, POST, PUT, PATCH, DELETE)
+- HTTP status codes and error handling
 
 ### Week 11: GraphQL
 
-Python notebook (Jupyter) - GraphQL fundamentals (800+ lines)
-
-- GraphQL core concepts and principles
-- Query syntax and operations
-- Schema Definition Language (SDL)
-- Mutations (create, update, delete)
-- Variables and fragments
-- Python client implementation
-- Best practices and patterns
-
-JavaScript/Node.js examples - Apollo Server and client
+JavaScript/Node.js examples - Apollo Server and client:
 
 - Apollo Server setup and schema
 - Resolvers and data fetching
@@ -160,6 +123,7 @@ JavaScript/Node.js examples - Apollo Server and client
 - Query and mutation examples
 - Real-world GraphQL patterns
 - Error handling in GraphQL
+- Schema Definition Language (SDL)
 
 Schema examples:
 

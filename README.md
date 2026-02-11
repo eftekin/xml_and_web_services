@@ -20,10 +20,7 @@ Created by students, for students.
 
 ## Get Started
 
-1. **Pick your language:**
-   - Python with Jupyter notebooks (interactive, good for exploration)
-   - JavaScript/Node.js (modern, practical, what web devs use)
-   - Both (recommended)
+1. **Install Node.js** if you want to run the JavaScript examples
 
 2. **Follow the weeks in order** or jump to what you need
 
@@ -31,26 +28,16 @@ Created by students, for students.
 
 ## Quick Setup
 
-**Python:**
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-jupyter notebook
-```
-
-**JavaScript:**
+**For JavaScript examples:**
 
 ```bash
 npm install
-node week07_rest/02_rest_with_node.js
+node week07_rest/01_rest_with_node.js
 ```
 
 ## What's Included
 
-- **Jupyter notebooks** with interactive examples (Python)
-- **Code files** with working examples (JavaScript/Node.js)
+- **JavaScript code files** with working examples (Node.js)
 - **Real code** you can run and modify
 - **Week-by-week structure** with progression
 - **References** for deeper learning
@@ -92,6 +79,7 @@ These are self-paced and designed to help you learn, not for formal grading. Wor
 
 1. Clone this repository
 2. Install Python dependencies:
+
    ```bash
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
@@ -127,7 +115,7 @@ xml_and_web_services/
 Each week's folder contains:
 
 - **README.md** - Week overview and learning objectives
-- **Jupyter Notebooks (.ipynb)** - Interactive lessons with code examples
+- **JavaScript files (.js)** - Working code examples (weeks 7, 11)
 - **Markdown files (.md)** - Theory and conceptual content
 - **examples/** - Sample files and code demonstrations
 - **exercises/** - Practice problems with solutions

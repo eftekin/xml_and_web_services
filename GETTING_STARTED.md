@@ -2,33 +2,15 @@
 
 ## Setup
 
-Pick one or both based on what you want to do.
-
-### Python (Jupyter Notebooks)
-
-```bash
-cd xml_and_web_services
-python3 -m venv .venv
-source .venv/bin/activate      # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-jupyter notebook
-```
-
-Then open a notebook file (`.ipynb`) from any week.
-
 ### JavaScript/Node.js
 
 ```bash
 cd xml_and_web_services
 npm install
-node week07_rest/02_rest_with_node.js
+node week07_rest/01_rest_with_node.js
 ```
 
 Modify and run any `.js` file directly.
-
-### Both (Recommended)
-
-Install both Python and Node.js, then use whichever makes sense for each topic.
 
 ## How It's Organized
 
@@ -55,7 +37,7 @@ Install both Python and Node.js, then use whichever makes sense for each topic.
 ## How to Use
 
 1. **Read the README** in each week folder—it teaches the concept
-2. **Look at code examples**—Python notebooks (.ipynb) or JavaScript files (.js)
+2. **Look at code examples**—JavaScript files (.js)
 3. **Run the code**—modify it, experiment with it
 4. **Do the assignments** if you want to practice
 
@@ -64,7 +46,7 @@ Each week is mostly independent, so you can skip around, but Weeks 1-6 build on 
 ## What Each Week Contains
 
 - **README.md** - Explains the concept
-- **Jupyter notebooks** (`.ipynb`) - Interactive Python examples
+- **JavaScript files** (`.js`) - Working code examples
 - **JavaScript files** (`.js`) - Node.js examples
 - **examples/** folder - Sample files and data
 
@@ -117,7 +99,7 @@ Build these as you progress:
 For each week, complete:
 
 - [ ] Read week README thoroughly
-- [ ] Complete all notebooks
+- [ ] Complete all code examples
 - [ ] Run and understand each code example
 - [ ] Attempt exercises
 - [ ] Review key terminology
@@ -166,16 +148,16 @@ For each week, complete:
 
 ### Common Issues
 
-**1. Jupyter notebooks won't start**
+**1. Import errors**
 
 ```bash
-pip install --upgrade jupyter notebook
+npm install
 ```
 
-**2. Import errors**
+**2. Node.js module errors**
 
 ```bash
-pip install -r requirements.txt --upgrade
+npm install --save axios graphql apollo-server
 ```
 
 **3. XML parsing errors**
@@ -205,7 +187,7 @@ If you find issues or want to improve the materials:
 When you're stuck:
 
 1. Review the week's README carefully
-2. Check code comments in notebooks
+2. Check code comments in JavaScript files
 3. Look at the examples folder
 4. Consult official documentation
 5. Try searching for similar problems online
