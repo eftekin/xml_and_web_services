@@ -2,20 +2,20 @@
 <!-- Example demonstrating XML Namespaces -->
 
 <library xmlns="http://example.com/library"
-         xmlns:book="http://example.com/book"
-         xmlns:author="http://example.com/author"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    
+    xmlns:book="http://example.com/book"
+    xmlns:author="http://example.com/author"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
     <!-- Default namespace: library -->
     <catalog>
         <collection name="Programming Books">
-            
+
             <!-- Using book namespace -->
             <book:item id="bk001">
                 <book:title>XML Mastery</book:title>
                 <book:isbn>978-1111111111</book:isbn>
                 <book:publicationYear>2024</book:publicationYear>
-                
+
                 <!-- Using author namespace -->
                 <author:details>
                     <author:name>
@@ -25,16 +25,16 @@
                     <author:email>john.smith@example.com</author:email>
                     <author:bio>Expert in XML technologies with 15 years of experience.</author:bio>
                 </author:details>
-                
+
                 <book:price currency="USD">44.99</book:price>
                 <book:category>Technical</book:category>
             </book:item>
-            
+
             <book:item id="bk002">
                 <book:title>RESTful Web Services</book:title>
                 <book:isbn>978-2222222222</book:isbn>
                 <book:publicationYear>2025</book:publicationYear>
-                
+
                 <author:details>
                     <author:name>
                         <author:firstName>Alice</author:firstName>
@@ -43,19 +43,19 @@
                     <author:email>alice.j@example.com</author:email>
                     <author:website>https://alicecodes.com</author:website>
                 </author:details>
-                
+
                 <book:price currency="EUR">39.99</book:price>
                 <book:category>Web Development</book:category>
             </book:item>
-            
+
         </collection>
     </catalog>
-    
+
     <!-- Mixing different namespaces shows their independence -->
     <metadata>
         <createdDate>2026-02-11</createdDate>
         <lastModified>2026-02-11T15:30:00Z</lastModified>
         <totalBooks>2</totalBooks>
     </metadata>
-    
+
 </library>
