@@ -6,6 +6,40 @@ XML is everywhere. Banks use it for transactions. Airlines use it for reservatio
 
 Before JSON and REST APIs became standard, XML was THE way systems talked to each other. Understanding XML teaches you core concepts that apply to modern APIs too.
 
+### Real-World Applications
+
+- **Web Services**: SOAP, REST APIs, Web Services Description Language (WSDL)
+- **Document Exchange**: Office documents (.docx, .xlsx), ePub ebooks
+- **Configuration**: Maven, Spring Framework, Ant build scripts
+- **Data Interchange**: EDI (Electronic Data Interchange), healthcare records (HL7)
+- **Content Management**: RSS feeds, podcasts, blogging platforms
+- **Business Documents**: Invoices, purchase orders, shipping manifests
+- **APIs & Web Services**: SOAP/XML-RPC, OpenAPI/Swagger (originally XML-based)
+
+## XML Components and Structure
+
+Every XML document consists of:
+
+- **Declaration**: `<?xml version="1.0" encoding="UTF-8"?>`
+- **Elements**: Tags that contain data and structure
+- **Attributes**: Metadata attached to elements
+- **Text Content**: Actual data between opening and closing tags
+- **Comments**: `<!-- This is a comment -->`
+- **Processing Instructions**: Special directives for XML processors
+
+### Basic Anatomy
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  XML Declaration and Comment -->
+<root>
+  <!-- Elements with attributes -->
+  <element attribute="value">Text content</element>
+  <!-- Self-closing element -->
+  <empty />
+</root>
+```
+
 ## What is XML?
 
 XML = eXtensible Markup Language. The key word is "extensible"—you design your own tags.
@@ -213,7 +247,250 @@ Now you can write well-formed XML. But your documents could be ANY shape:
 <book><title>Hamlet</title><author>Shakespeare</author></book>  <!-- How about this? -->
 ```
 
-Both are well-formed, but are they CORRECT? Week 2 introduces **DTDs**, which are rules that define "correct" structure. Week 3 goes deeper with **XML Schema** for powerful validation."
+Both are well-formed, but are they CORRECT? Week 2 introduces **DTDs**, which are rules that define "correct" structure. Week 3 goes deeper with **XML Schema** for powerful validation.
+
+## XML vs Other Formats
+
+### XML vs JSON
+
+| Feature        | XML                        | JSON              |
+| -------------- | -------------------------- | ----------------- |
+| **Verbose**    | More verbose               | More compact      |
+| **Attributes** | Built-in support           | Not native        |
+| **Comments**   | Supported                  | Not recommended   |
+| **Type hints** | Requires schema            | Some native types |
+| **Parsing**    | Stricter, more complex     | Simpler, faster   |
+| **Use cases**  | Enterprise, legacy systems | APIs, web apps    |
+
+**When to use XML:**
+
+- Need comments and metadata
+- Strict validation required
+- Legacy system integration
+- Complex hierarchical data
+
+**When to use JSON:**
+
+- Building modern web APIs
+- Lightweight data transfer
+- JavaScript/web-based systems
+- Real-time applications
+
+### Example Comparison
+
+```xml
+<!-- XML -->
+<?xml version="1.0"?>
+<person>
+  <name>Alice</name>
+  <age>30</age>
+  <email>alice@example.com</email>
+</person>
+```
+
+```json
+// JSON
+{
+  "name": "Alice",
+  "age": 30,
+  "email": "alice@example.com"
+}
+```
+
+## XML Parsing Basics
+
+### Two Common Parsing Approaches
+
+**DOM (Document Object Model)**
+
+- Loads entire XML into memory as a tree structure
+- Good for: small documents, when you need full access to structure
+- Bad for: large files, memory-limited environments
+
+**SAX (Simple API for XML)**
+
+- Event-driven, streams through document
+- Good for: large files, processing-as-you-go
+- Bad for: when you need random access to elements
+
+```python
+# Python DOM parsing example
+import xml.etree.ElementTree as ET
+
+tree = ET.parse('book.xml')
+root = tree.getroot()
+for book in root.findall('book'):
+    title = book.find('title').text
+    print(title)
+```
+
+## Best Practices
+
+### DO ✓
+
+- Use meaningful element names: `<customer_name>` not `<cn>`
+- Be consistent: Pick `firstName` OR `first_name`, not both
+- Validate against a schema (DTD or XSD)
+- Use attributes for metadata, elements for content
+- Indent/format for readability
+- Include XML declaration at the top
+- Escape special characters properly
+
+### DON'T ✗
+
+- Use ambiguous names: `<item>`, `<data>`, `<value>`
+- Leave documents unvalidated
+- Abuse attributes for content that should be elements
+- Mix naming conventions (camelCase and snake_case together)
+- Forget to close tags or nest improperly
+- Use special characters without escaping
+- Create deeply nested structures (hard to parse and understand)
+
+### Example: Well-Structured vs Poor
+
+````xml
+<!-- GOOD: Clear, valid, useful -->
+<?xml version="1.0" encoding="UTF-8"?>
+<employee_roster>
+  <employee id="001">
+    <first_name>John</first_name>
+    <last_name>Doe</last_name>
+    <department>Engineering</department>
+    <hire_date>2023-01-15</hire_date>
+  </employee>
+</employee_roster>
+
+<!-- BAD: Confusing, hard to parse, inconsistent -->
+<emp>
+  <fn>John</fn>
+  <ln>Doe</ln>
+  <d>Engineering</d>
+  <hd>2023-01-15</hd>
+</emp>
+```"
+
+````
+
+## Common XML Mistakes & How to Fix Them
+
+### Error 1: Missing XML Declaration
+
+```xml
+<!-- WRONG: No declaration -->
+<root>
+  <item>value</item>
+</root>
+
+<!-- RIGHT: Should have declaration -->
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <item>value</item>
+</root>
+```
+
+### Error 2: Multiple Root Elements
+
+```xml
+<!-- WRONG: Two root elements -->
+<?xml version="1.0"?>
+<book>...</book>
+<book>...</book>
+
+<!-- RIGHT: Wrap in single root -->
+<?xml version="1.0"?>
+<library>
+  <book>...</book>
+  <book>...</book>
+</library>
+```
+
+### Error 3: Improper Nesting
+
+```xml
+<!-- WRONG: Crossed tags -->
+<parent>
+  <child>text</parent>
+</child>
+
+<!-- RIGHT: Properly nested -->
+<parent>
+  <child>text</child>
+</parent>
+```
+
+### Error 4: Unescaped Special Characters
+
+```xml
+<!-- WRONG: Special characters not escaped -->
+<description>Price < $50 & high quality</description>
+
+<!-- RIGHT: Characters escaped -->
+<description>Price &lt; $50 &amp; high quality</description>
+```
+
+### Error 5: Inconsistent Naming
+
+```xml
+<!-- WRONG: Inconsistent naming conventions -->
+<?xml version="1.0"?>
+<employee_list>
+  <Employee>
+    <firstName>John</firstName>
+    <last_name>Doe</last_name>
+  </Employee>
+  <employee>
+    <firstname>Jane</firstname>
+    <LastName>Smith</LastName>
+  </employee>
+</employee_list>
+
+<!-- RIGHT: Consistent naming -->
+<?xml version="1.0"?>
+<employee_list>
+  <employee>
+    <first_name>John</first_name>
+    <last_name>Doe</last_name>
+  </employee>
+  <employee>
+    <first_name>Jane</first_name>
+    <last_name>Smith</last_name>
+  </employee>
+</employee_list>
+```
+
+### Error 6: Attributes with Complex Data
+
+```xml
+<!-- WRONG: Using attribute for complex data -->
+<person name="John" address="123 Main St, Springfield, IL 62701" skills="Java, Python, XML" />
+
+<!-- RIGHT: Use elements for complex data -->
+<person name="John">
+  <address>
+    <street>123 Main St</street>
+    <city>Springfield</city>
+    <state>IL</state>
+    <zip>62701</zip>
+  </address>
+  <skills>
+    <skill>Java</skill>
+    <skill>Python</skill>
+    <skill>XML</skill>
+  </skills>
+</person>
+```
+
+## Key Takeaways
+
+By the end of Week 1, you should be able to:
+
+1. ✅ Write well-formed XML documents
+2. ✅ Understand the five rules of valid XML structure
+3. ✅ Know when to use elements vs attributes
+4. ✅ Escape special characters correctly
+5. ✅ Recognize and fix common XML errors
+6. ✅ Understand how XML compares to JSON
+7. ✅ Know basic parsing concepts (DOM vs SAX)
 
 ## Assessment
 
