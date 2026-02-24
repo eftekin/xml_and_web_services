@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE library SYSTEM "library.dtd">
+<library>
+  <books>
+    <book isbn="isbn_978-0345391803" genre="fiction">
+      <title>The Hitchhiker's Guide to the Galaxy</title>
+      <author>Douglas Adams</author>
+      <year>1979</year>
+      <available>yes</available>
+    </book>
+    <book isbn="isbn_978-0345391804" genre="nonfiction">
+      <title>Deep Work</title>
+      <author>Cal Newport</author>
+      <year>2016</year>
+      <available>yes</available>
+    </book>
+    <book isbn="isbn_978-0345391805" genre="reference">
+      <title>Clean Code</title>
+      <author>Robert C. Martin</author>
+      <year>2008</year>
+      <available>yes</available>
+    </book>
+  </books>
+  <members>
+    <member id="M001" type="student">
+      <name>Mustafa Eftekin</name>
+      <borrowed isbn="isbn_978-0345391803">
+        <dueDate>2026-03-15</dueDate>
+      </borrowed>
+    </member>
+    <member id="M002" type="faculty">
+      <name>Elon Musk</name>
+      <borrowed isbn="isbn_978-0345391803">
+        <dueDate>2026-03-20</dueDate>
+      </borrowed>
+      <borrowed isbn="isbn_978-0345391803">
+        <dueDate>2026-04-01</dueDate>
+      </borrowed>
+    </member>
+    <member id="M003" type="public">
+      <name>Sam Altman</name>
+    </member>
+  </members>
+</library>

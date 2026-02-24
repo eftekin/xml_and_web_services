@@ -1,0 +1,33 @@
+<!-- Library DTD Definition -->
+<!-- Root element -->
+<!ELEMENT library (books, members)>
+
+<!-- Books section -->
+<!ELEMENT books (book*)>
+
+<!-- Book element with isbn (International Standard Book Number) and genre attributes -->
+<!ELEMENT book (title, author+, year, available)>
+<!ATTLIST book isbn ID #REQUIRED> 
+<!ATTLIST book genre (fiction|nonfiction|reference|periodical) #REQUIRED>
+
+<!-- Book sub-elements -->
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT author (#PCDATA)>
+<!ELEMENT year (#PCDATA)>
+<!ELEMENT available (#PCDATA)>
+
+<!-- Members section -->
+<!ELEMENT members (member*)>
+
+<!-- Member element with id and type attributes -->
+<!ELEMENT member (name, borrowed*)>
+<!ATTLIST member id ID #REQUIRED>
+<!ATTLIST member type (student|faculty|public) #REQUIRED>
+
+<!-- Member sub-elements -->
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT borrowed (dueDate)>
+<!ATTLIST borrowed isbn IDREF #REQUIRED>
+
+<!-- Borrowed sub-elements -->
+<!ELEMENT dueDate (#PCDATA)>
