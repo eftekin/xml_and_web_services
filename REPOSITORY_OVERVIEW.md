@@ -7,13 +7,13 @@ xml_and_web_services/
 │
 ├── README.md                    # Start here
 ├── GETTING_STARTED.md           # Setup instructions
+├── REPOSITORY_OVERVIEW.md       # This file - detailed structure
+├── ASSIGNMENTS.md               # Course assignments
 ├── requirements.txt             # Python packages
 ├── package.json                 # Node.js packages
 │
 ├── week01_foundations/          # XML basics
 │   ├── README.md
-│   ├── 01_introduction_to_distributed_systems.ipynb
-│   ├── 02_xml_basics_and_syntax.ipynb
 │   └── examples/
 │
 ├── week02_dtd_namespaces/       # DTD & Namespaces
@@ -44,6 +44,8 @@ xml_and_web_services/
 │   ├── README.md
 │   └── examples/
 │       └── petstore-openapi.yaml
+│
+├── week09_messaging/            # (Reserved for future content)
 │
 ├── week10_soap_wsdl/            # SOAP & WSDL
 │   └── README.md

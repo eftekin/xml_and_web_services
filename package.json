@@ -7,8 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --watch",
-    "rest-server": "node week07_rest/examples/simple_api_server.js",
-    "graphql-server": "node week11_graphql/examples/apollo_server.js"
+    "rest": "node week07_rest/01_rest_with_node.js",
+    "graphql": "node week11_graphql/01_graphql_with_node.js"
   },
   "keywords": [
     "XML",

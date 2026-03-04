@@ -93,16 +93,14 @@ These are self-paced and designed to help you learn, not for formal grading. Wor
 ```
 xml_and_web_services/
 ├── README.md
+├── GETTING_STARTED.md
 ├── requirements.txt
+├── package.json
 ├── week01_foundations/
 │   ├── README.md
-│   ├── 01_introduction.ipynb
-│   ├── 02_xml_basics.ipynb
 │   └── examples/
 ├── week02_dtd_namespaces/
 │   ├── README.md
-│   ├── 01_dtd.ipynb
-│   ├── 02_namespaces.ipynb
 │   └── examples/
 ├── [... other weeks ...]
 └── resources/
