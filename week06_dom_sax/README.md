@@ -1,217 +1,321 @@
-# Week 6: DOM & SAX
+# Week 6: DOM & SAX Parsing
 
-## Two Ways to Parse XML
+Programmatic XML processing in real applications: tree-based parsing (DOM) vs event-stream parsing (SAX), plus StAX-style alternatives.
 
-You have an XML file. You need to read it in your code. There are two fundamentally different approaches:
+## Learning Goals
 
-**DOM** - Load the whole thing into memory as a tree, then navigate it
+By the end of Week 6, you should be able to:
 
-**SAX** - Stream through it, triggering events as you encounter elements
+1. Explain why XML parsing inside code is still necessary even with XPath/XSLT.
+2. Compare DOM, SAX, and StAX-style parsing models.
+3. Use core DOM APIs for reading, navigating, and modifying XML.
+4. Build SAX handlers with robust state and text buffering.
+5. Choose the right parser for file size, memory constraints, and use case.
+6. Apply secure parsing practices (especially XXE prevention).
 
-Each has tradeoffs.
+## Agenda (Lecture Structure)
 
-## The Trade-off: Speed vs Simplicity
+1. Why programmatic parsing?
+2. XML parsing landscape
+3. DOM concepts and data model
+4. DOM core API and navigation
+5. DOM document modification
+6. DOM code examples (Java, JavaScript, Python)
+7. SAX concepts and event model
+8. SAX handler interface and implementation
+9. SAX examples and advanced patterns
+10. DOM vs SAX decision guide
+11. StAX and other alternatives
+12. Best practices, pitfalls, and exercises
 
-### DOM: "Load It All"
+## Reference XML (used across examples)
 
-**How it works:**
-
-1. Parse entire XML file
-2. Build a tree structure in memory
-3. Navigate the tree with code
-
-**Example in Python:**
-
-```python
-import xml.etree.ElementTree as ET
-
-# Load entire file
-tree = ET.parse('books.xml')
-root = tree.getroot()
-
-# Navigate freely
-for book in root.findall('book'):
-    title = book.find('title').text
-    author = book.find('author').text
-    print(f"{title} by {author}")
-
-# Can modify and save
-for book in root.findall('book'):
-    price_elem = book.find('price')
-    if price_elem is not None:
-        current = float(price_elem.text)
-        price_elem.text = str(current * 1.10)  # 10% increase
-
-tree.write('books_updated.xml')
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<bookstore>
+    <book category="fiction" id="b1">
+        <title lang="en">The Great Gatsby</title>
+        <author>F. Scott Fitzgerald</author>
+        <year>1925</year>
+        <price>12.99</price>
+    </book>
+    <book category="science" id="b2">
+        <title lang="en">A Brief History of Time</title>
+        <author>Stephen Hawking</author>
+        <year>1988</year>
+        <price>9.99</price>
+    </book>
+    <book category="fiction" id="b3">
+        <title lang="en">Dune</title>
+        <author>Frank Herbert</author>
+        <year>1965</year>
+        <price>14.99</price>
+    </book>
+</bookstore>
 ```
 
-**Advantages:**
+## 1) Why Programmatic Parsing?
 
-- Easy to code - navigate like JavaScript DOM
-- Can jump anywhere in document
-- Can modify and save back
-- Good for small files
+XSLT and XPath are excellent for querying/transforming, but application code is needed for:
 
-**Disadvantages:**
+- API/data integration into objects or databases
+- dynamic XML generation from runtime data
+- business-rule validation beyond schema constraints
+- very large file processing
+- targeted incremental updates
+- embedding XML logic in services, jobs, and frameworks
 
-- Loads entire file in memory (100MB file = 100MB+ RAM)
-- Slow for huge files (consider 1GB XML file!)
-- Wasteful if you only need part of the data
+## 2) What Is an XML Parser?
 
-**Use DOM when:**
+An XML parser turns raw XML text into either:
 
-- File is small enough to fit in memory
-- You need to modify the XML
-- You need random access (jump around)
-- Simplicity matters more than performance
+- an in-memory structure (DOM tree), or
+- a stream of parse events (SAX)
 
-### SAX: "Stream It"
+Core parser responsibilities:
 
-**How it works:**
+1. Well-formedness checking (mandatory)
+2. Optional validation (DTD/XSD when enabled)
 
-1. Start reading the file
-2. Fire events as you encounter each element
-3. Process one element at a time
-4. Never store the whole tree
+## 3) Parsing Landscape: DOM, SAX, StAX
 
-**Example in Python:**
+### DOM
 
-````python
-import xml.sax
-from xml.sax.handler import ContentHandler
+- loads whole document in memory
+- random access in any direction
+- supports read and write
+- easier to code
+- memory intensive
 
-class BookHandler(ContentHandler):
-    def __init__(self):
-        self.current = {}
-        self.in_book = False
+### SAX
 
-    def startElement(self, name, attrs):
-        if name == 'book':
-            self.in_book = True
-            self.current = {}
-        elif self.in_book and name in ['title', 'author', 'price']:
-            self.buffer = []
+- event-driven streaming
+- forward-only processing
+- read-oriented (no output tree)
+- very low memory footprint
+- more complex state handling
 
-    def characters(self, content):
-        if self.in_book:
-            if hasattr(self, 'buffer'):
-                self.buffer.append(content)
+### StAX (mainly Java)
 
-    def endElement(self, name):
-        if self.in_book and name in ['title', 'author', 'price']:
-            self.current[name] = ''.join(self.buffer).strip()
-        elif name == 'book':
-            print(f"{self.current.get('title')} by {self.current.get('author')}")
-            self.in_book = False
+- pull-based streaming
+- your code controls event iteration
+- lower memory, often simpler than SAX callbacks
+- supports streaming reads and writes
 
-# Use it
-handler = BookHandler()
-xml.sax.parse('books.xml', handler)
+Key idea: DOM trades memory for convenience; SAX/StAX trade convenience for scalability.
+
+## 4) DOM Concepts and Data Model
+
+DOM is a W3C standard (Levels 1-4 evolution). XML becomes a graph of `Node` objects.
+
+Frequently encountered node types:
+
+- `DOCUMENT_NODE` (9)
+- `ELEMENT_NODE` (1)
+- `ATTRIBUTE_NODE` (2)
+- `TEXT_NODE` (3)
+- `COMMENT_NODE` (8)
+- `PROCESSING_INSTRUCTION_NODE` (7)
+- `DOCUMENT_TYPE_NODE` (10)
+
+Core `Node` properties include:
+
+- `nodeName`, `nodeValue`, `nodeType`
+- `parentNode`, `childNodes`, siblings
+- `ownerDocument`, `textContent`
+
+Important beginner pitfall: `childNodes` contains text nodes (including whitespace), not just elements.
+
+## 5) DOM Core API and Navigation
+
+Typical flow (Java):
+
+```java
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+DocumentBuilder builder = factory.newDocumentBuilder();
+Document doc = builder.parse(new File("bookstore.xml"));
+doc.getDocumentElement().normalize();
+Element root = doc.getDocumentElement();
 ```
 
-**Advantages:**
-- Low memory usage (reads one element at a time)
-- Fast even on huge files (1GB+ files)
-- Perfect for Big Data processing
-- Good for streaming (data coming from network)
+Navigation patterns:
 
-**Disadvantages:**
-- More complex code (event-driven)
-- Can't jump around (must process sequentially)
-- Can't modify original file
-- Harder to understand/debug
+- `getElementsByTagName("book")`
+- `getAttribute("category")`
+- `getTextContent()`
+- filter by `nodeType` when iterating `childNodes`
 
-**Use SAX when:**
-- File is too large for memory
-- You only need certain elements
-- Reading speed is critical
-- Data comes from a stream
+## 6) DOM in JavaScript and Python
 
-## Real-World Comparisons
+### JavaScript (browser)
 
-**Scenario 1: User's book collection (50 books)**
-```
-File size: ~500KB
-Best approach: DOM
-Reason: Small, user might want to edit in UI
-Code simplicity wins over memory
-```
+- `DOMParser().parseFromString(xml, 'application/xml')`
+- inspect `parsererror`
+- use `getElementsByTagName` or `querySelector`
 
-**Scenario 2: Processing million stock transactions**
-```
-File size: ~2GB
-Best approach: SAX
-Reason: Huge file, only need totals/summaries
-Memory/speed critical
-```
+### Node.js
 
-**Scenario 3: Web API that returns XML**
-```
-File size: ~100KB (typical API response)
-Best approach: DOM
-Reason: Manageable size, need flexible access
-Simplicity for quick parsing
+- use a DOM-compatible package (for example `xmldom`)
+
+### Python
+
+- `xml.dom.minidom`: W3C-like DOM API
+- `xml.etree.ElementTree`: Pythonic, simpler, not W3C DOM
+
+## 7) DOM Modification Workflows
+
+DOM supports full read/write:
+
+- create nodes (`createElement`)
+- set attributes (`setAttribute`)
+- append/insert/replace/remove nodes
+- update text (`setTextContent`)
+
+Java serialization pattern:
+
+```java
+TransformerFactory tf = TransformerFactory.newInstance();
+Transformer transformer = tf.newTransformer();
+transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+transformer.transform(new DOMSource(doc), new StreamResult(new FileWriter("bookstore_updated.xml")));
 ```
 
-**Scenario 4: Data pipeline processing 10,000+ files**
+## 8) SAX Concepts and Event Model
+
+SAX is event-driven and forward-only. The parser triggers callbacks such as:
+
+- `startDocument()` / `endDocument()`
+- `startElement(...)` / `endElement(...)`
+- `characters(...)`
+
+Critical rule: `characters()` may fire multiple times for one logical text node. Always append to a buffer.
+
+## 9) SAX Handler Implementation Patterns
+
+### Basic handler approach
+
+- track current context (flags or state)
+- capture attributes in `startElement`
+- append text in `characters`
+- consume buffered text in `endElement`
+
+### State machine approach (recommended for complex XML)
+
+Use an enum-like state model instead of many booleans to make parser behavior explicit and maintainable.
+
+### Error handling
+
+Register an `ErrorHandler` (Java SAX) and treat parse/validation errors explicitly.
+
+## 10) DOM vs SAX Decision Guide
+
+Use DOM when:
+
+- files are small to medium
+- you need random access
+- you need in-place modification
+- implementation simplicity is preferred
+
+Use SAX when:
+
+- files are large (for example > 50 MB) or streamed
+- you only need one sequential pass
+- memory usage must stay minimal
+- you are counting/filtering/extracting subsets
+
+Rule of thumb from lecture: start with DOM, switch to SAX when memory/performance become bottlenecks.
+
+## 11) Real-World Scenarios
+
+- Small SOAP/XML API response: DOM
+- Multi-GB export/log feed: SAX
+- Startup config files: DOM
+- High-volume counting/filtering jobs: SAX
+- Programmatic SVG/XML editing: DOM
+- Streaming feed readers: SAX
+
+## 12) StAX and Other Alternatives
+
+### StAX (Java)
+
+- pull model (`reader.next()` loop)
+- easier control flow than callbacks
+- good for pipelines and mixed strategies
+
+### Writing with StAX
+
+`XMLStreamWriter` is an efficient way to emit XML programmatically.
+
+### Python `iterparse()`
+
+`xml.etree.ElementTree.iterparse()` gives streaming-like behavior.
+Call `elem.clear()` after processing subtrees to keep memory low.
+
+## 13) Best Practices
+
+1. Always handle parser exceptions with clear diagnostics.
+2. Normalize DOM (`normalize()`) after parsing when appropriate.
+3. Filter `childNodes` by `nodeType`.
+4. In SAX, always buffer/append in `characters()`.
+5. Close readers/streams safely (`try-with-resources`, context managers).
+6. Disable external entities to prevent XXE.
+
+## 14) Security Focus: XXE Prevention
+
+When parsing untrusted XML, disable dangerous features (example Java factory settings):
+
+```java
+factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+factory.setXIncludeAware(false);
+factory.setExpandEntityReferences(false);
 ```
-File size: Each ~5MB, total ~50GB
-Best approach: SAX
-Reason: Need to process all efficiently
-Memory matters when processing at scale
-```
 
-## Practical DOM Example
+Treat all external XML as untrusted input.
 
-```python
-import xml.etree.ElementTree as ET
+## 15) Common Pitfalls Quick Reference
 
-# Parse XML
-xml_string = '''<?xml version="1.0"?>
-<library>
-  <book id="1">
-    <title>1984</title>
-    <author>George Orwell</author>
-    <year>1949</year>
-  </book>
-  <book id="2">
-    <title>Dune</title>
-    <author>Frank Herbert</author>
-    <year>1965</year>
-  </book>
-</library>
-'''
+- Unexpected extra DOM children from whitespace text nodes
+- truncated SAX text from overwriting (not appending) in `characters()`
+- reading SAX attributes in `endElement` (too late)
+- skipping `normalize()` then seeing odd text behavior
+- file-handle leaks from unclosed streams
+- enabled external entities (XXE risk)
+- wrong `replaceChild` argument order
+- blocking parse assumptions in SAX
+- using DOM for huge files and hitting `OutOfMemoryError`
+- no registered SAX error handler
 
-root = ET.fromstring(xml_string)
+## 16) Practice Exercises
 
-# Find specific book
-first_book = root.find('book')
-print(f"First book: {first_book.find('title').text}")
+Use `bookstore.xml` and implement in Java or Python.
 
-# Find all books
-for book in root.findall('book'):
-    title = book.find('title').text
-    attr_id = book.get('id')
-    print(f"Book {attr_id}: {title}")
+### DOM exercises
 
-# XPath works too!
-recent_books = root.findall(".//book[int(year) > 1950]")
-print(f"Modern books: {len(recent_books)}")
-```
+1. Print title/author/price for every book.
+2. Print books where `category='fiction'`.
+3. Add a new `<book>` and save to a new file.
+4. Change first book price to `8.99`.
+5. Remove books with `year < 1970`.
+6. Count `<bookstore>` child elements while distinguishing element vs text nodes.
 
-## Industries Still Using XML
+### SAX exercises
 
-- **Finance**: SWIFT messages, FIX protocol, ISO 20022
-- **Healthcare**: HL7, DICOM (medical imaging)
-- **Government**: EDI, data exchange standards
-- **Publishing**: EPUB (e-books), XML-based workflows
-- **Web Services**: SOAP, REST APIs with XML responses
-- **Configuration**: Maven, Ant, Spring, Office formats (DOCX, XLSX)
+1. Print element open/close events.
+2. Collect all titles and print at `endDocument()`.
+3. Count total `<book>` elements.
+4. Print books where `price < 12.00` using state tracking.
+5. Build and print a `Map<String,String>` per book.
+6. Register an `ErrorHandler` and test with malformed XML.
 
-XML parsing (DOM/SAX) is still a core skill for enterprise systems."
+## Week 6 Summary
+
+- DOM: easiest model, full tree, read/write, memory heavy.
+- SAX: streaming callbacks, minimal memory, read-oriented, more state complexity.
+- StAX/iterparse: useful middle ground for streaming with clearer control.
+- Security and correctness (XXE hardening, buffering, node filtering) are essential in production XML processing.
 
 ---
 
 **Previous:** [Week 5 - XSLT](../week05_xslt/)
 **Next:** [Week 7 - REST](../week07_rest/)
-```
