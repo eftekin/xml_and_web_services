@@ -1,241 +1,262 @@
 # Week 5: XSLT
 
-## The Problem
+XML-based transformation language for producing HTML, XML, and text output from XML input.
 
-You have XML data. You want to display it as HTML on a website. Or convert it to CSV. Or transform it into a different XML schema. You could write code to loop and extract and rebuild, but XSLT is purpose-built for this.
+## Learning Goals
 
-XSLT (eXtensible Stylesheet Language Transformations) is XML's transformation language. You define templates for different elements, and XSLT applies them to transform your data.
+By the end of Week 5, you should be able to:
 
-## How XSLT Works
+- Explain what XSLT is and how it uses XPath.
+- Write valid XSLT stylesheets and template rules.
+- Use `xsl:apply-templates`, `xsl:value-of`, and `xsl:for-each` effectively.
+- Apply sorting and conditional logic (`xsl:sort`, `xsl:if`, `xsl:choose`).
+- Build reusable transformations with variables, parameters, modes, and named templates.
+- Transform XML to HTML with a complete multi-template stylesheet.
 
-XSLT is a transformation engine:
+## XSLT in One Line
 
-```
-Input XML Document  +  XSLT Stylesheet  →  Output (HTML, CSV, different XML, etc.)
-```
+`Input XML + XSLT Stylesheet -> Output (HTML/XML/text)`
 
-You write rules (templates) that say: "When you encounter element X, transform it to Y."
+XSLT is declarative: you define matching templates, and the processor applies them.
 
-**Example:** You have a book catalog in XML. You want it as HTML for a website:
+## 1) What Is XSLT?
+
+XSLT (Extensible Stylesheet Language Transformations):
+
+- Standard: W3C Recommendation.
+- Language: XML vocabulary (stylesheets are XML documents).
+- Query engine: XPath.
+- Output: HTML, XML, text, and more (with related technologies).
+
+## 2) Stylesheet Structure
+
+Minimal structure:
 
 ```xml
-<!-- Input: book.xml -->
-<catalog>
-  <book>
-    <title>1984</title>
-    <author>George Orwell</author>
-    <price>13.99</price>
-  </book>
-</catalog>
-```
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-Your XSLT says: "Turn each book element into an HTML table row."
+  <xsl:output method="html" encoding="UTF-8" indent="yes"/>
 
-```xml
-<!-- book.xsl -->
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:template match="/catalog">
-    <html><body>
-      <table border="1">
-        <xsl:apply-templates select="book"/>
-      </table>
-    </body></html>
+  <xsl:template match="/">
+    <!-- root template -->
   </xsl:template>
 
   <xsl:template match="book">
-    <tr>
-      <td><xsl:value-of select="title"/></td>
-      <td><xsl:value-of select="author"/></td>
-      <td><xsl:value-of select="price"/></td>
-    </tr>
+    <!-- book template -->
   </xsl:template>
+
 </xsl:stylesheet>
 ```
 
-Result:
+`xsl:transform` can be used as an equivalent root element name.
 
-```html
-<html><body>
-  <table border="1">
-    <tr>
-      <td>1984</td>
-      <td>George Orwell</td>
-      <td>13.99</td>
-    </tr>
-  </table>
-</body></html>
-```
+## 3) Output Control with `xsl:output`
 
-## Core XSLT Elements
-
-### `<xsl:template match="...">`
-
-Defines a rule: "When you find nodes matching this pattern, do this."
+Common settings:
 
 ```xml
-<xsl:template match="/catalog">  <!-- Match root element -->
-  <!-- Transform it here -->
-</xsl:template>
-
-<xsl:template match="book">  <!-- Match any <book> element -->
-  <!-- Transform it here -->
-</xsl:template>
-
-<xsl:template match="book[@available='true']">  <!-- Match only available books -->
-  <!-- Transform it here -->
-</xsl:template>
+<xsl:output method="html" version="5" encoding="UTF-8" indent="yes"/>
+<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
+<xsl:output method="text" encoding="UTF-8"/>
 ```
 
-### `<xsl:value-of select="...">`
+Key attributes: `method`, `encoding`, `indent`, and optional doctype controls.
 
-Output the value of a node:
+## 4) Templates and Matching
+
+### `xsl:template`
+
+`match` contains an XPath expression.
 
 ```xml
-<xsl:value-of select="title"/>  <!-- Output the book's title -->
-<xsl:value-of select="../title"/>  <!-- Output parent's title -->
-<xsl:value-of select="//author[1]"/>  <!-- First author in document -->
+<xsl:template match="/">...</xsl:template>
+<xsl:template match="book">...</xsl:template>
+<xsl:template match="book[@category='fiction']">...</xsl:template>
 ```
 
-### `<xsl:for-each select="...">`
+### `xsl:apply-templates`
 
-Loop through multiple nodes:
+Delegates processing to matching templates.
 
 ```xml
-<!-- For each book in the catalog -->
+<xsl:apply-templates/>
+<xsl:apply-templates select="book"/>
+<xsl:apply-templates select="book" mode="summary"/>
+```
+
+Without `select`, all child nodes are processed, including text nodes.
+
+### `xsl:value-of`
+
+Outputs string value of an XPath expression.
+
+```xml
+<xsl:value-of select="title"/>
+<xsl:value-of select="@category"/>
+<xsl:value-of select="price * 1.1"/>
+```
+
+Use `xsl:copy-of` when you need to copy full node subtrees (not just string values).
+
+## 5) Looping, Sorting, and Conditionals
+
+### `xsl:for-each`
+
+```xml
 <xsl:for-each select="book">
-  <div>
-    <h2><xsl:value-of select="title"/></h2>
-    <p>By: <xsl:value-of select="author"/></p>
-  </div>
+  <p><xsl:value-of select="title"/></p>
 </xsl:for-each>
 ```
 
-### `<xsl:if test="...">`
-
-Conditional output:
+### `xsl:sort`
 
 ```xml
-<!-- Only output price if available is true -->
-<xsl:if test="@available='true'">
-  Price: <xsl:value-of select="price"/>
-</xsl:if>
+<xsl:for-each select="book">
+  <xsl:sort select="price" data-type="number" order="ascending"/>
+</xsl:for-each>
+```
 
-<!-- Only output if price is high -->
-<xsl:if test="price > 50">
-  <span class="expensive">Luxury item</span>
+Sort attributes: `select`, `data-type`, `order`, `case-order`, `lang`.
+
+### `xsl:if`
+
+```xml
+<xsl:if test="price &lt; 12">
+  <span class="cheap"><xsl:value-of select="title"/></span>
 </xsl:if>
 ```
 
-### `<xsl:choose>` (Like switch/case)
+Inside XML attributes, `<` must be escaped as `&lt;`.
+
+### `xsl:choose`
 
 ```xml
 <xsl:choose>
-  <xsl:when test="price < 10">
-    <span>Budget friendly</span>
-  </xsl:when>
-  <xsl:when test="price < 30">
-    <span>Moderate price</span>
-  </xsl:when>
-  <xsl:otherwise>
-    <span>Premium item</span>
-  </xsl:otherwise>
+  <xsl:when test="@category='fiction'">...</xsl:when>
+  <xsl:when test="@category='science'">...</xsl:when>
+  <xsl:otherwise>...</xsl:otherwise>
 </xsl:choose>
 ```
 
-### `<xsl:apply-templates>`
+## 6) Reuse and Parameterization
 
-Process child elements using their templates:
-
-```xml
-<!-- Process all children of catalog -->
-<xsl:apply-templates/>
-
-<!-- Process only book children -->
-<xsl:apply-templates select="book"/>
-
-<!-- Process in a specific order -->
-<xsl:apply-templates select="book">
-  <xsl:sort select="price"/>
-</xsl:apply-templates>
-```
-
-## Complete Transformation Example
-
-Transform a catalog to interactive HTML:
+### Variables and parameters
 
 ```xml
-<?xml version="1.0"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
-  <!-- Root template -->
-  <xsl:template match="/catalog">
-    <html>
-      <head>
-        <title>Book Catalog</title>
-        <style>
-          .book { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
-          .expensive { color: red; font-weight: bold; }
-          .cheap { color: green; }
-        </style>
-      </head>
-      <body>
-        <h1>Our Books</h1>
-        <xsl:apply-templates select="book">
-          <xsl:sort select="price"/>
-        </xsl:apply-templates>
-      </body>
-    </html>
-  </xsl:template>
-
-  <!-- Book template -->
-  <xsl:template match="book">
-    <div class="book">
-      <h2><xsl:value-of select="title"/></h2>
-      <p>Author: <xsl:value-of select="author"/></p>
-      <p>
-        Price:
-        <xsl:choose>
-          <xsl:when test="price > 20">
-            <span class="expensive">$<xsl:value-of select="price"/></span>
-          </xsl:when>
-          <xsl:otherwise>
-            <span class="cheap">$<xsl:value-of select="price"/></span>
-          </xsl:otherwise>
-        </xsl:choose>
-      </p>
-      <xsl:if test="@available='true'">
-        <p style="color:green;">✓ In stock</p>
-      </xsl:if>
-    </div>
-  </xsl:template>
-
-</xsl:stylesheet>
+<xsl:variable name="tax" select="0.1"/>
+<xsl:param name="lang" select="'en'"/>
 ```
 
-## When to Use XSLT
+- Variables are immutable.
+- Parameters can be passed from caller context.
 
-**Good for:**
+### Named templates
 
-- Converting XML to HTML for display
-- Transforming between XML schemas
-- Batch processing XML documents
-- Server-side templating
-- SOAP web services
+```xml
+<xsl:template name="displayPrice">
+  <xsl:param name="price"/>
+  <xsl:param name="currency" select="'$'"/>
+  <xsl:value-of select="$currency"/>
+  <xsl:value-of select="format-number($price, '0.00')"/>
+</xsl:template>
 
-**Not ideal for:**
+<xsl:call-template name="displayPrice">
+  <xsl:with-param name="price" select="price"/>
+</xsl:call-template>
+```
 
-- Complex business logic (use a programming language)
-- Real-time transformations (can be slow)
-- Interactive processing (static transformations)
+### Modes
 
-**Industry use:**
+Modes allow different templates for same node type in different contexts.
 
-- Banks transform financial data between systems
-- Publishers convert different manuscript formats
-- Government data exchange pipelines
-- Enterprise integrations (ESB - Enterprise Service Bus)
+```xml
+<xsl:template match="book" mode="summary">...</xsl:template>
+<xsl:template match="book" mode="detail">...</xsl:template>
+```
+
+## 7) XML -> HTML Worked Example (Bookstore)
+
+The lecture’s full example performs:
+
+- Root template renders page shell (HTML + CSS).
+- `bookstore` template creates a table.
+- `book` template renders rows.
+- Sorting by numeric `price`.
+- Dynamic CSS class from `@category`.
+- Price formatting with `format-number(price, '0.00')`.
+- Position-based numbering with `position()`.
+
+Expected sorted order by price:
+
+1. A Brief History of Time
+2. The Great Gatsby
+3. Dune
+
+## XSLT Elements Quick Reference
+
+- `xsl:template`
+- `xsl:apply-templates`
+- `xsl:call-template`
+- `xsl:value-of`
+- `xsl:copy-of`
+- `xsl:for-each`
+- `xsl:sort`
+- `xsl:if`
+- `xsl:choose`, `xsl:when`, `xsl:otherwise`
+- `xsl:variable`
+- `xsl:param`
+- `xsl:with-param`
+- `xsl:attribute`
+- `xsl:element`
+- `xsl:comment`
+- `xsl:output`
+- `xsl:import`, `xsl:include`
+
+## Useful Functions in XSLT Context
+
+- `format-number()`
+- `generate-id()`
+- `key()` with `xsl:key` lookup tables
+- `document()` for external XML
+- `current()` for stable context in nested expressions
+- `unparsed-text()`, `resolve-uri()` in XSLT 2.0+
+
+## Common XSLT Mistakes and Fixes
+
+- Using `select='title'` when string output is needed:
+  Use `title/text()` or `string(title)`.
+- Writing `<` directly in `test` attributes:
+  Use `&lt;`.
+- Unquoted string literal in tests:
+  `@category = 'fiction'` not `@category = fiction`.
+- Unexpected text copied due to default templates:
+  Add explicit handling for text nodes when needed.
+- Numeric sorting treated as text:
+  Set `data-type='number'`.
+- Trying to copy full subtree with `xsl:value-of`:
+  Use `xsl:copy-of`.
+
+## Practice Exercises (XSLT)
+
+Using `bookstore.xml`:
+
+1. Output a `<ul>` of book titles.
+2. Include price next to each title (2 decimals).
+3. Sort titles alphabetically.
+4. Highlight books under `$12` in red.
+5. Label books by category using `xsl:choose`.
+6. Create a named template to output a reusable book-card `<div>`.
+
+## Week 5 Key Takeaways
+
+- XSLT is the transformation layer built on XPath.
+- Template matching plus `apply-templates` gives recursive, scalable transformations.
+- Sorting, conditionals, and reusable templates are core for real projects.
+- Understanding common pitfalls saves major debugging time.
 
 ---
 
-**Previous:** [Week 4 - XPath](../week04_xpath/)  
+**Previous:** [Week 4 - XPath](../week04_xpath/)
 **Next:** [Week 6 - DOM & SAX](../week06_dom_sax/)
