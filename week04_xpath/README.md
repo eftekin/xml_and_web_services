@@ -1,194 +1,282 @@
 # Week 4: XPath
 
-## The Problem
+W3C-standard query and navigation language for XML trees.
 
-You have an XML document with hundreds of books. You need to find all books published after 2020. You could loop through everything, but that's tedious. XPath is the query language for XML—think SQL for databases, but for XML documents.
+## Learning Goals
 
-## XPath vs Loops
+By the end of Week 4, you should be able to:
 
-Compare two ways to find all books published after 2020:
+- Explain what XPath is and where it is used.
+- Understand XPath node types and the XML tree model.
+- Write absolute and relative location paths.
+- Use axes, predicates, operators, and built-in functions.
+- Build practical queries for filtering, counting, and navigating XML.
 
-**The Loop Way:**
-```javascript
-const allBooks = document.querySelectorAll('book');
-const recentBooks = [];
-for (let book of allBooks) {
-  const year = parseInt(book.querySelector('year').textContent);
-  if (year > 2020) {
-    recentBooks.push(book);
-  }
-}
-```
+## Course Roadmap (XPath Portion)
 
-**The XPath Way:**
-```xpath
-//book[year > 2020]
-```
+1. What is XPath?
+2. Node Types
+3. Location Paths and Syntax
+4. The 13 Axes
+5. Predicates and Operators
+6. Built-in Functions
 
-XPath does in one expression what takes 5+ lines of code.
-
-## XPath Syntax: The Basics
-
-### Navigation
-
-XPath lets you navigate the XML tree:
-
-```xpath
-/catalog                    <!-- Root element -->
-/catalog/book              <!-- All <book> children of <catalog> -->
-//book                      <!-- All <book> elements anywhere -->
-//book/title                <!-- <title> elements inside any <book> -->
-/catalog/book[1]/title      <!-- Title of first book -->
-```
-
-**Key characters:**
-- `/` = child
-- `//` = anywhere in the tree
-- `[1]` = position (1-based, not 0-based!)
-- `.` = current node
-- `..` = parent node
-
-### Attributes
-
-Select elements by their attributes:
-
-```xpath
-/catalog/book[@id="123"]    <!-- Book with id attribute = "123" -->
-//book[@available="true"]   <!-- Any book with available=true -->
-//@id                        <!-- All id attributes anywhere -->
-```
-
-## Predicates: Filtering Data
-
-Predicates are conditions inside `[brackets]`:
-
-```xpath
-//book[author="George Orwell"]     <!-- Books by specific author -->
-//book[year > 2000]                 <!-- Books published after 2000 -->
-//book[price < 20]                  <!-- Books under $20 -->
-//book[author and isbn]             <!-- Books that have author AND isbn -->
-//book[position() < 4]              <!-- First three books -->
-```
-
-### Working with Text
-
-XPath functions work on text:
-
-```xpath
-//book[contains(title, "Adventure")]     <!-- Title contains "Adventure" -->
-//book[starts-with(author, "J.R.")]     <!-- Author starts with "J.R." -->
-//book[string-length(title) > 20]       <!-- Long titles (>20 characters) -->
-//book[normalize-space(description)]    <!-- Has non-empty description -->
-```
-
-## Axes: Directions of Travel
-
-XPath axes let you move in different directions from a node:
-
-```xpath
-//book/author                      <!-- children -->
-/catalog/book                      <!-- children (with explicit /)
-(/catalog//book)[1]/author         <!-- ancestor book's author
-//author/..                        <!-- parent (ancestor) -->
-//author/parent::book              <!-- parent (explicit axis) -->
-//author/following-sibling::rating <!-- Siblings that come after -->
-//author/preceding-sibling::title  <!-- Siblings that come before -->
-//title/ancestor::*                <!-- All ancestors of any title -->
-```
-
-Common axes:
-- `child::` - Direct children (default)
-- `parent::` - Parent node
-- `ancestor::` - Any ancestor
-- `following-sibling::` - Siblings after this node
-- `preceding-sibling::` - Siblings before this node
-- `descendant::` - Any descendant
-
-## XPath Functions
-
-### Counting and Position
-
-```xpath
-count(//book)                    <!-- Total number of books -->
-count(//book[year > 2020])       <!-- Number of recent books -->
-position()                        <!-- Current position in result set -->
-last()                            <!-- Last position -->
-```
-
-### String Functions
-
-```xpath
-concat('Book: ', //book[1]/title)    <!-- Combine strings -->
-substring(//book[1]/title, 1, 5)     <!-- First 5 characters -->
-string-length(//book[1]/title)       <!-- Number of characters -->
-translate(//book[1]/author, ' ', '_') <!-- Replace spaces with underscores -->
-```
-
-### Math
-
-```xpath
-sum(//book/price)                <!-- Total of all prices -->
-floor(//book[1]/price)           <!-- Round down -->
-ceiling(//book[1]/price)         <!-- Round up -->
-round(//book[1]/price)           <!-- Round to nearest -->
-```
-
-## Real Example: A Book Catalog
-
-Given this XML:
+## Reference XML (used in lecture examples)
 
 ```xml
-<?xml version="1.0"?>
-<catalog>
-  <book id="001" available="true">
-    <title>1984</title>
-    <author>George Orwell</author>
-    <year>1949</year>
-    <price>13.99</price>
-    <rating>4.5</rating>
+<?xml version="1.0" encoding="UTF-8"?>
+<bookstore>
+  <book category="fiction" id="b1">
+    <title lang="en">The Great Gatsby</title>
+    <author>F. Scott Fitzgerald</author>
+    <year>1925</year>
+    <price>12.99</price>
   </book>
-  <book id="002" available="true">
-    <title>Brave New World</title>
-    <author>Aldous Huxley</author>
-    <year>1932</year>
+  <book category="science" id="b2">
+    <title lang="en">A Brief History of Time</title>
+    <author>Stephen Hawking</author>
+    <year>1988</year>
+    <price>9.99</price>
+  </book>
+  <book category="fiction" id="b3">
+    <title lang="en">Dune</title>
+    <author>Frank Herbert</author>
+    <year>1965</year>
     <price>14.99</price>
-    <rating>4.2</rating>
   </book>
-  <book id="003" available="false">
-    <title>The Hobbit</title>
-    <author>J.R.R. Tolkien</author>
-    <year>1937</year>
-    <price>15.99</price>
-    <rating>4.7</rating>
-  </book>
-</catalog>
+</bookstore>
 ```
 
-Useful XPath queries:
+## 1) What Is XPath?
+
+XPath (XML Path Language) is an expression language for selecting nodes in XML.
+
+- Standard: W3C Recommendation.
+- Returns: node sets, strings, numbers, or booleans.
+- Used by: XSLT, XQuery, DOM tooling, XML test/assertion tools.
+
+## 2) XPath Node Types
+
+XPath models XML as nodes. The seven node types are:
+
+1. Document
+2. Element
+3. Attribute
+4. Text
+5. Comment
+6. Processing Instruction
+7. Namespace
+
+Important rule: attributes are not child nodes.
 
 ```xpath
-//book[@available="true"]              <!-- Available books only -->
-//book[price < 15]                     <!-- Cheaper books -->
-//book[year > 1940]/title              <!-- Titles of post-1940 books -->
-//book[rating >= 4.5]/author           <!-- Authors of highly-rated books -->
-count(//book)                          <!-- Total books -->
-sum(//book/price)                      <!-- Total inventory value -->
-//book[position() = 1]/title            <!-- First book title -->
-//author[contains(., 'Tolkien')]/..    <!-- Book(s) by Tolkien -->
+//book/title        /* element child */
+//book/@category    /* attribute */
+//book/*            /* all element children */
+//book/@*           /* all attributes */
 ```
 
-## Why XPath Matters
+## 3) Expressions, Steps, and Paths
 
-XPath is used everywhere:
-- **Web scraping** - Extract data from HTML/XML
-- **API responses** - Parse XML responses
-- **XSLT** - XPath is core to XSLT transformations
-- **XQuery** - Building block for XML databases
-- **Assertions** - Testing frameworks use XPath
+Each step conceptually follows:
 
-Learning XPath gives you a superpower for working with structured data."
+`axis::node-test[predicate]`
+
+### Absolute vs relative
+
+- Absolute paths start with `/` (from document root).
+- Relative paths start from current context node.
+
+```xpath
+/bookstore/book/title
+//book
+book/title
+../title
+./author
+@category
+```
+
+### Wildcards and special tokens
+
+```xpath
+*           /* any element */
+@*          /* any attribute */
+node()      /* any node */
+text()      /* text nodes */
+comment()   /* comments */
+.           /* current node */
+..          /* parent node */
+//          /* descendant-or-self shorthand */
+```
+
+### Union of paths
+
+```xpath
+//book/title | //book/price
+//title | //price
+```
+
+## 4) Predicates (Filtering)
+
+Predicates narrow node sets using `[...]`.
+
+```xpath
+//book[1]
+//book[last()]
+//book[position() <= 2]
+//book[@category]
+//book[@category='fiction']
+//book[@id='b2']
+//book[price]
+//book[price < 10]
+//book[title='Dune']
+//book[@category='fiction'][price < 15]
+```
+
+## 5) The 13 XPath Axes
+
+All axes:
+
+- `child::`
+- `parent::`
+- `self::`
+- `descendant::`
+- `descendant-or-self::`
+- `ancestor::`
+- `ancestor-or-self::`
+- `following::`
+- `following-sibling::`
+- `preceding::`
+- `preceding-sibling::`
+- `attribute::`
+- `namespace::`
+
+Most common in practice: `child::` (default), `@` (`attribute::`), `..` (`parent::`), and `//` (`descendant-or-self::node()/child::`).
+
+### Forward examples
+
+```xpath
+child::book
+descendant::title
+descendant-or-self::book
+following::book
+following-sibling::book[1]
+```
+
+### Reverse examples
+
+```xpath
+parent::node()
+ancestor::bookstore
+ancestor-or-self::book
+preceding-sibling::book[1]
+preceding::title
+```
+
+## 6) Operators
+
+### Comparison
+
+- `=`, `!=`, `<`, `>`, `<=`, `>=`
+
+### Logical
+
+- `and`, `or`, `not()`
+
+### Arithmetic
+
+- `+`, `-`, `*`, `div`, `mod`
+
+### Union and coercion
+
+```xpath
+//title | //author
+//book[year = '1988']
+//book[year = 1988]
+//book[number(price) > 10]
+```
+
+XPath 1.0 has only one set operator: `|` (union).
+
+## 7) Built-in Functions
+
+### String functions
+
+- `string()`
+- `concat()`
+- `string-length()`
+- `substring()`
+- `contains()`
+- `starts-with()`
+- `normalize-space()`
+- `translate()`
+- `ends-with()`, `upper-case()`, `lower-case()` in XPath 2.0+
+
+### Node-set functions
+
+- `count()`
+- `last()`
+- `position()`
+- `name()`
+
+### Number and boolean functions
+
+- `number()`
+- `sum()`
+- `round()`
+- `floor()`
+- `ceiling()`
+- `boolean()`
+- `not()`
+- `true()`
+- `false()`
+- `lang()`
+
+`abs()` is available in XPath 2.0+.
+
+## 20 Practical XPath Examples (Lecture Set)
+
+```xpath
+1.  //book
+2.  //book[@category='fiction']
+3.  //book[price < 10]
+4.  //book[@category='fiction'][1]
+5.  //book/title
+6.  //book/title/text()
+7.  //book/@id
+8.  count(//book)
+9.  sum(//price)
+10. //book[last()]
+11. //book[contains(title,'Brief')]
+12. /bookstore/*
+13. //book/preceding-sibling::book
+14. //title[@lang]
+15. //title[@lang='en']
+16. //book[year > 1970]
+17. //book[not(@category)]
+18. string(//book[1]/title)
+19. //book | //author
+20. //*[@id]
+```
+
+## Practice Exercises (XPath)
+
+Using the reference `bookstore.xml`:
+
+1. Select all `<author>` elements.
+2. Select books published after 1970.
+3. Count books with `price > 10`.
+4. Get the title of the most expensive book.
+5. Select fiction books sorted by year.
+6. Use `ancestor::` to find `bookstore` from a `price` node.
+
+## Week 4 Key Takeaways
+
+- XPath is the core language for XML navigation and selection.
+- Mastering nodes, predicates, axes, and functions enables concise and powerful queries.
+- These same XPath skills are directly reused in Week 5 (XSLT).
 
 ---
 
-**Previous:** [Week 3 - XML Schema](../week03_xsd/)  
+**Previous:** [Week 3 - XML Schema](../week03_xsd/)
 **Next:** [Week 5 - XSLT](../week05_xslt/)
